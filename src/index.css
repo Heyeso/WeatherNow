@@ -11,24 +11,24 @@ body,
 
 /* Fonts */
 @font-face {
-  font-family: "Noto Sans regular";
-  src: local("Noto Sans regular"),
-    url("./assets/fonts/NotoSansDisplay-Regular.woff2") format("woff2");
+  font-family: "Montserrat regular";
+  src: local("Montserrat regular"),
+    url("./assets/fonts/Montserrat-Regular.woff2") format("woff2");
   /* other formats include: 'woff2', 'truetype, 'opentype',
                             'embedded-opentype', and 'svg' */
 }
 @font-face {
-  font-family: "Noto Sans semi-bold";
-  src: local("Noto Sans semi-bold"),
-    url("./assets/fonts/NotoSansDisplay-SemiBold.woff2") format("woff2");
+  font-family: "Montserrat semi-bold";
+  src: local("Montserrat semi-bold"),
+    url("./assets/fonts/Montserrat-SemiBold.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Noto Sans medium";
-  src: local("Noto Sans medium"),
-    url("./assets/fonts/NotoSansDisplay-Medium.woff2") format("woff2");
+  font-family: "Montserrat medium";
+  src: local("Montserrat medium"),
+    url("./assets/fonts/Montserrat-Medium.woff2") format("woff2");
 }
 @font-face {
-  font-family: "Noto Sans light";
-  src: local("Noto Sans light"),
-    url("./assets/fonts/NotoSansDisplay-Light.woff2") format("woff2");
+  font-family: "Montserrat light";
+  src: local("Montserrat light"),
+    url("./assets/fonts/Montserrat-Light.woff2") format("woff2");
 }

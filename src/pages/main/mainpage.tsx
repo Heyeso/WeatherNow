@@ -1,14 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { COLORS, DailyCardVM, WEATHER } from "../../utils/constants";
+import {
+  COLORS,
+  CurrentCardVM,
+  DailyCardVM,
+  WEATHER,
+} from "../../utils/constants";
+import { SunnyIcon } from "./components/assets/weather.icon";
 import DailyCard from "./components/dailycard";
 
-const MainPageContainer = styled.section``;
+const MainPageContainer = styled.section`
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+`;
 
 const SampleDay: DailyCardVM = {
   Date: "MON",
   Temperature: "13",
+  Weather: WEATHER.NIGHT,
+};
+
+const SampleCurrent: CurrentCardVM = {
+  Temperature: "15",
+  Description: "Clear",
+  Location: {
+    State: "Lagos",
+    Country: "NG",
+  },
   Weather: WEATHER.NIGHT,
 };
 
@@ -20,7 +44,7 @@ function MainPage() {
   }, []);
   return (
     <MainPageContainer>
-      <CurrentCard />
+      <CurrentCard {...SampleCurrent} />
       <DailyCard {...SampleDay} />
     </MainPageContainer>
   );
@@ -29,11 +53,10 @@ function MainPage() {
 export default MainPage;
 
 const CurrentCardContainer = styled.section`
+  box-sizing: border-box;
   position: relative;
-  width: 100%;
   max-width: 640px;
   height: fit-content;
-  margin: 100px;
   padding: 15px;
   color: ${COLORS.TEXT};
   display: flex;
@@ -56,11 +79,66 @@ const CurrentCardContainer = styled.section`
   transform: translate3d(0, 0, 0);
   transform: translateZ(0);
 `;
-
-const CurrentCard = () => {
+const TemperatureContain = styled.div`
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+  font-family: "Montserrat light";
+  font-size: 170px;
+  line-height: 100%;
+  text-align: center;
+  margin: 10px 0;
+  span {
+    width: fit-content;
+    height: fit-content;
+    font-family: "Montserrat light";
+    font-size: 48px;
+    line-height: normal;
+  }
+`;
+const LocationContain = styled.p`
+  width: fit-content;
+  height: fit-content;
+  font-family: "Montserrat semi-bold";
+  font-size: 18px;
+  text-align: center;
+  margin: 10px 0 0;
+`;
+const DescriptionContain = styled.div`
+  width: fit-content;
+  height: fit-content;
+  font-family: "Montserrat regular";
+  font-size: 24px;
+  text-align: center;
+  margin: 0 0 10px 0;
+`;
+const WeatherContain = styled.p`
+  svg {
+    width: 128px;
+    height: 128px;
+  }
+`;
+interface CurrentCardProps extends CurrentCardVM {}
+const CurrentCard = ({
+  Temperature,
+  Description,
+  Location,
+  Weather,
+}: CurrentCardProps) => {
   return (
     <CurrentCardContainer>
       <CurrentDayTime />
+      <TemperatureContain>
+        {Temperature}
+        <span>°c</span>
+      </TemperatureContain>
+      <LocationContain>
+        {Location.State}, {Location.Country}
+      </LocationContain>
+      <DescriptionContain>{Description}</DescriptionContain>
+      <WeatherContain>
+        <SunnyIcon />
+      </WeatherContain>
     </CurrentCardContainer>
   );
 };
@@ -80,9 +158,9 @@ const CurrentTimeContainer = styled.div`
   }
 `;
 const CurrentDayContainer = styled.div`
+  width: fit-content;
   margin: 10px 0;
   padding: 0;
-  width: 100%;
   font-family: "Montserrat medium";
   font-size: 16px;
   text-align: center;

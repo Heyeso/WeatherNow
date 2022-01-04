@@ -32,6 +32,11 @@ export interface DailyCardVM {
 }
 
 export interface CurrentCardVM {
-  
+  Temperature: string;
+  Description: string;
+  Location: {
+    State: string;
+    Country: string;
+  }
+  Weather: WEATHER;
 }
-

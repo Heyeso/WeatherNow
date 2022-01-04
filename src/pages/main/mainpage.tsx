@@ -20,6 +20,16 @@ const MainPageContainer = styled.section`
   overflow-x: hidden;
 `;
 
+const BGcolorContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+`;
+
 const SampleDay: DailyCardVM = {
   Date: "MON",
   Temperature: "13",
@@ -42,10 +52,13 @@ function MainPage() {
   useEffect(() => {
     if (search) console.log(search);
   }, []);
+
   return (
     <MainPageContainer>
-      <CurrentCard {...SampleCurrent} />
-      <DailyCard {...SampleDay} />
+      <BGcolorContainer>
+        <CurrentCard {...SampleCurrent} />
+        <DailyCard {...SampleDay} />
+      </BGcolorContainer>
     </MainPageContainer>
   );
 }
@@ -110,12 +123,12 @@ const DescriptionContain = styled.div`
   font-family: "Montserrat regular";
   font-size: 24px;
   text-align: center;
-  margin: 0 0 10px 0;
+  margin: 10px 0;
 `;
 const WeatherContain = styled.p`
   svg {
-    width: 128px;
-    height: 128px;
+    width: 90px;
+    height: 90px;
   }
 `;
 interface CurrentCardProps extends CurrentCardVM {}
@@ -176,24 +189,22 @@ const CurrentDayTime = () => {
   }, []);
 
   const tick = () => {
-    return new Date(
-      new Date().toLocaleString("en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      })
-    );
+    return new Date();
+  };
+
+  const getHour = () => {
+    if (time)
+      if (time.getHours() <= 12) return time.getHours();
+      else return time.getHours() % 12;
+
+    return "";
   };
 
   return (
     <>
       <CurrentTimeContainer>
-        {time && `${time.getHours()}:${time.getMinutes()}`}
-        <span>{new Date().getHours() > 11 ? "PM" : "AM"}</span>
+        {time && `${getHour()}:${time.getMinutes()}`}
+        <span>{time && time.getHours() > 11 ? "PM" : "AM"}</span>
       </CurrentTimeContainer>
       <CurrentDayContainer>
         {time && `${time.toDateString()}`}

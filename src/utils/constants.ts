@@ -2,6 +2,7 @@ export enum COLORS {
   WHITE = "#FFFFFF",
   BLACK = "#000000",
   TEXT = "#2D3436",
+  TEXT2 = "#F2F2F2",
 }
 
 export enum WEATHER {
@@ -29,3 +30,8 @@ export interface DailyCardVM {
   Temperature: string;
   Weather: WEATHER;
 }
+
+export interface CurrentCardVM {
+  
+}
+

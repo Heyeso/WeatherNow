@@ -27,12 +27,12 @@ export enum WEATHER {
 
 export interface DailyCardVM {
   Date: string;
-  Temperature: string;
+  Temperature: number;
   Weather: WEATHER;
 }
 
 export interface CurrentCardVM {
-  Temperature: string;
+  Temperature: number;
   Description: string;
   Location: {
     State: string;

@@ -7,6 +7,7 @@ import {
   DailyCardVM,
   WEATHER,
 } from "../../utils/constants";
+import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
 import { SunnyIcon } from "./components/assets/weather.icon";
 import DailyCard from "./components/dailycard";
 
@@ -20,7 +21,7 @@ const MainPageContainer = styled.section`
   overflow-x: hidden;
 `;
 
-const BGcolorContainer = styled.div`
+const BGcolorContainer = styled.div<BGProps>`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -28,16 +29,17 @@ const BGcolorContainer = styled.div`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: ${(props) => props.backGroundColor || "white"};
 `;
 
 const SampleDay: DailyCardVM = {
   Date: "MON",
-  Temperature: "13",
+  Temperature: 13,
   Weather: WEATHER.NIGHT,
 };
 
 const SampleCurrent: CurrentCardVM = {
-  Temperature: "15",
+  Temperature: 13,
   Description: "Clear",
   Location: {
     State: "Lagos",
@@ -45,6 +47,10 @@ const SampleCurrent: CurrentCardVM = {
   },
   Weather: WEATHER.NIGHT,
 };
+
+interface BGProps {
+  backGroundColor?: string;
+}
 
 function MainPage() {
   const { search } = useParams();
@@ -55,7 +61,9 @@ function MainPage() {
 
   return (
     <MainPageContainer>
-      <BGcolorContainer>
+      <BGcolorContainer
+        backGroundColor={TemperatureColorGenerator(SampleCurrent.Temperature)}
+      >
         <CurrentCard {...SampleCurrent} />
         <DailyCard {...SampleDay} />
       </BGcolorContainer>

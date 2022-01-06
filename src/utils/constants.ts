@@ -2,30 +2,56 @@ export enum COLORS {
   WHITE = "#FFFFFF",
   BLACK = "#000000",
   TEXT = "#2D3436",
+  TEXT2 = "#F2F2F2",
 }
 
 export enum WEATHER {
-  SUNNY = "sunny",
-  NIGHT = "night",
-  CLOUDY = "cloudy",
-  CLOUDY_SUNNY = "cloudySunny",
-  CLOUDY_NIGHT = "cloudyNight",
-  RAIN = "rain",
-  RAIN_SUNNY = "rainSunny",
-  RAIN_NIGHT = "rainNight",
-  SNOW = "snow",
-  SNOW_SUNNY = "snowSunny",
-  SNOW_NIGHT = "snowNight",
-  THUNDER = "thunder",
-  THUNDER_SUNNY = "thunderSunny",
-  THUNDER_NIGHT = "thunderNight",
-  WINDY = "windy",
-  WINDY_SUNNY = "windySunny",
-  WINDY_NIGHT = "windyNight",
+  SUNNY = "Clear",
+  CLOUDY = "Clouds",
+  RAIN = "Drizzle",
+  RAIN_SUNNY = "Rain",
+  SNOW = "Snow",
+  THUNDER = "Thunderstorm",
+  ATMOSPHERE = "Atmosphere",
 }
 
 export interface DailyCardVM {
-  Date: string;
-  Temperature: string;
-  Weather: WEATHER;
+  temperature: {
+    day: number;
+    night: number;
+  };
+  weather: {
+    main: WEATHER;
+    description: string;
+  };
+}
+
+export interface CurrentCardVM {
+  city: string;
+  country: string;
+  sunrise: number;
+  sunset: number;
+  temperature: number;
+  weather: {
+      main: WEATHER;
+      description: string;
+  };
+  daily: DailyCardVM[];
+}
+
+export interface SearchCardVM {
+  city: string;
+  country: string;
+  sunrise: number;
+  sunset: number;
+  temperature: number;
+  weather: {
+      main: WEATHER;
+      description: string;
+  };
+}
+
+export interface RateLimit {
+  limit: string | null;
+  remaining: string | null;
 }

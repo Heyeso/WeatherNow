@@ -1,15 +1,13 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { COLORS, DailyCardVM } from "../../../utils/constants";
+import { COLORS, DailyCardVM, WEATHER } from "../../../utils/constants";
 import { SunnyIcon, NightIcon } from "./assets/weather.icon";
 
 const DailyCardContainer = styled.section`
   position: relative;
-  width: 100%;
-  max-width: 100px;
+  max-width: 90px;
   height: fit-content;
-  margin: 100px;
-  padding: 15px;
+  padding: 15px 10px;
   color: ${COLORS.TEXT};
   display: flex;
   align-items: center;
@@ -35,14 +33,14 @@ const DateContain = styled.p`
   width: fit-content;
   height: fit-content;
   font-family: "Montserrat regular";
-  font-size: 24px;
+  font-size: 18px;
   text-align: center;
   margin: 0;
 `;
 const WeatherContain = styled.p`
   svg {
-    width: 100px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
   }
 `;
 const TemperatureContain = styled.p`
@@ -50,17 +48,21 @@ const TemperatureContain = styled.p`
   width: fit-content;
   height: fit-content;
   font-family: "Montserrat light";
-  font-size: 48px;
+  font-size: 36px;
   text-align: center;
   margin: 0;
   span {
     width: fit-content;
     height: fit-content;
     font-family: "Montserrat light";
-    font-size: 30px;
+    font-size: 24px;
   }
 `;
-interface Props extends DailyCardVM {}
+interface Props {
+  Date: string;
+  Temperature: number;
+  Weather: WEATHER;
+}
 function DailyCard({ Date, Temperature, Weather }: Props) {
   return (
     <DailyCardContainer>

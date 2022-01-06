@@ -5,6 +5,7 @@ import {
   COLORS,
   CurrentCardVM,
   DailyCardVM,
+  SearchCardVM,
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
@@ -33,19 +34,25 @@ const BGcolorContainer = styled.div<BGProps>`
 `;
 
 const SampleDay: DailyCardVM = {
-  Date: "MON",
-  Temperature: 13,
-  Weather: WEATHER.NIGHT,
+  temperature: {
+    day: 13,
+    night: 11,
+  },
+  weather: {
+    main: WEATHER.SUNNY,
+    description: "Clear Sunny",
+  },
 };
 
 const SampleCurrent: CurrentCardVM = {
-  Temperature: 13,
-  Description: "Clear",
-  Location: {
-    State: "Lagos",
-    Country: "NG",
+  sunrise: 1485762037,
+  sunset: 1485794875,
+  temperature: 14,
+  weather: {
+    main: WEATHER.SUNNY,
+    description: "Clear Sunny",
   },
-  Weather: WEATHER.NIGHT,
+  daily: [SampleDay],
 };
 
 interface BGProps {
@@ -55,6 +62,9 @@ interface BGProps {
 function MainPage() {
   const { search } = useParams();
 
+  const [data, setData] = useState<CurrentCardVM | null>(null);
+  const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
+
   useEffect(() => {
     if (search) console.log(search);
   }, []);
@@ -62,15 +72,23 @@ function MainPage() {
   return (
     <MainPageContainer>
       <BGcolorContainer
-        backGroundColor={TemperatureColorGenerator(SampleCurrent.Temperature)}
+        backGroundColor={TemperatureColorGenerator(SampleCurrent.temperature)}
       >
-        <CurrentCard {...SampleCurrent} />
-        <DailyCard {...SampleDay} />
+        <CurrentCard
+          Temperature={SampleCurrent.temperature}
+          Description={SampleCurrent.weather.description}
+          Location={{ City: "lagos", Country: "NG" }}
+          Weather={SampleCurrent.weather.main}
+        />
+        <DailyCard
+          Date="MON"
+          Temperature={SampleDay.temperature.day}
+          Weather={SampleDay.weather.main}
+        />
       </BGcolorContainer>
     </MainPageContainer>
   );
 }
-
 export default MainPage;
 
 const CurrentCardContainer = styled.section`
@@ -129,7 +147,7 @@ const DescriptionContain = styled.div`
   width: fit-content;
   height: fit-content;
   font-family: "Montserrat regular";
-  font-size: 24px;
+  font-size: 18px;
   text-align: center;
   margin: 10px 0;
 `;
@@ -139,7 +157,15 @@ const WeatherContain = styled.p`
     height: 90px;
   }
 `;
-interface CurrentCardProps extends CurrentCardVM {}
+interface CurrentCardProps {
+  Temperature: number;
+  Description: string;
+  Location: {
+    City: string;
+    Country: string;
+  };
+  Weather: WEATHER;
+}
 const CurrentCard = ({
   Temperature,
   Description,
@@ -154,7 +180,7 @@ const CurrentCard = ({
         <span>°c</span>
       </TemperatureContain>
       <LocationContain>
-        {Location.State}, {Location.Country}
+        {Location.City}, {Location.Country}
       </LocationContain>
       <DescriptionContain>{Description}</DescriptionContain>
       <WeatherContain>

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { COLORS, DailyCardVM } from "../../../utils/constants";
+import { COLORS, DailyCardVM, WEATHER } from "../../../utils/constants";
 import { SunnyIcon, NightIcon } from "./assets/weather.icon";
 
 const DailyCardContainer = styled.section`
@@ -58,7 +58,11 @@ const TemperatureContain = styled.p`
     font-size: 24px;
   }
 `;
-interface Props extends DailyCardVM {}
+interface Props {
+  Date: string;
+  Temperature: number;
+  Weather: WEATHER;
+}
 function DailyCard({ Date, Temperature, Weather }: Props) {
   return (
     <DailyCardContainer>

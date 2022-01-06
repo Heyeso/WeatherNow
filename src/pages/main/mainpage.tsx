@@ -5,12 +5,31 @@ import {
   COLORS,
   CurrentCardVM,
   DailyCardVM,
+  RateLimit,
   SearchCardVM,
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
 import { SunnyIcon } from "./components/assets/weather.icon";
 import DailyCard from "./components/dailycard";
+
+const RateLimitContainer = styled.div`
+  opacity: 0.5;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  font-size: 24px;
+  font-family: "Montserrat medium";
+  color: ${COLORS.TEXT};
+  top: 10px;
+  left: 10px;
+  width: fit-content;
+  height: fit-content;
+  span {
+    padding-top: 10px;
+    font-size: 10px;
+  }
+`;
 
 const MainPageContainer = styled.section`
   width: 100%;
@@ -64,9 +83,33 @@ function MainPage() {
 
   const [data, setData] = useState<CurrentCardVM | null>(null);
   const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
+  const [rateLimit, setRateLimit] = useState<RateLimit>({
+    limit: "0",
+    remaining: "0",
+  });
 
   useEffect(() => {
+    const GetCurrentWeather = async () => {
+      await fetch(`http://localhost:3000`, {
+        method: `GET`,
+      })
+        .then((response) => {
+          let rateLimits = {
+            limit: response.headers.get("X-RateLimit-Limit"),
+            remaining: response.headers.get("X-RateLimit-Remaining"),
+          };
+          console.log(rateLimits);
+          setRateLimit(rateLimits);
+          return response.json();
+        })
+        .then((dataBook) => {
+          setData(dataBook);
+          console.log(dataBook);
+        })
+        .catch((err) => console.log(err));
+    };
     if (search) console.log(search);
+    else GetCurrentWeather();
   }, []);
 
   return (
@@ -86,6 +129,10 @@ function MainPage() {
           Weather={SampleDay.weather.main}
         />
       </BGcolorContainer>
+      <RateLimitContainer>
+        {rateLimit.remaining}/{rateLimit.limit}
+        <span>REQUESTS LEFT</span>
+      </RateLimitContainer>
     </MainPageContainer>
   );
 }

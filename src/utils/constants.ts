@@ -48,3 +48,8 @@ export interface SearchCardVM {
       description: string;
   };
 }
+
+export interface RateLimit {
+  limit: string | null;
+  remaining: string | null;
+}

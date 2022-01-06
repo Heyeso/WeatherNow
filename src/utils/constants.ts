@@ -27,6 +27,8 @@ export interface DailyCardVM {
 }
 
 export interface CurrentCardVM {
+  city: string;
+  country: string;
   sunrise: number;
   sunset: number;
   temperature: number;

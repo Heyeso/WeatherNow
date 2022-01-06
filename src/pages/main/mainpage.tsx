@@ -64,6 +64,8 @@ const SampleDay: DailyCardVM = {
 };
 
 const SampleCurrent: CurrentCardVM = {
+  city: "Lagos",
+  country: "NG",
   sunrise: 1485762037,
   sunset: 1485794875,
   temperature: 14,

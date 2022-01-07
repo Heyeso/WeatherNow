@@ -5,6 +5,8 @@ import {
   COLORS,
   CurrentCardVM,
   DailyCardVM,
+  KelvinToCelsius,
+  KelvinToFahrenheit,
   RateLimit,
   SearchCardVM,
   WEATHER,
@@ -52,6 +54,15 @@ const BGcolorContainer = styled.div<BGProps>`
   background-color: ${(props) => props.backGroundColor || "white"};
 `;
 
+const DailyCardContainer = styled.section`
+  display: flex;
+  max-width: fit-content;
+  margin: 20px 0 0;
+  padding: 0;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+`;
+
 const SampleDay: DailyCardVM = {
   temperature: {
     day: 13,
@@ -63,19 +74,6 @@ const SampleDay: DailyCardVM = {
   },
 };
 
-const SampleCurrent: CurrentCardVM = {
-  city: "Lagos",
-  country: "NG",
-  sunrise: 1485762037,
-  sunset: 1485794875,
-  temperature: 14,
-  weather: {
-    main: WEATHER.SUNNY,
-    description: "Clear Sunny",
-  },
-  daily: [SampleDay],
-};
-
 interface BGProps {
   backGroundColor?: string;
 }
@@ -84,11 +82,20 @@ function MainPage() {
   const { search } = useParams();
 
   const [data, setData] = useState<CurrentCardVM | null>(null);
+  const [toCelsius, setToCelsius] = useState<boolean>(true);
   const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
   });
+  const [dailySeq, setDailySeq] = useState<string[]>([
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT",
+  ]);
 
   useEffect(() => {
     const GetCurrentWeather = async () => {
@@ -100,19 +107,105 @@ function MainPage() {
             limit: response.headers.get("X-RateLimit-Limit"),
             remaining: response.headers.get("X-RateLimit-Remaining"),
           };
-          console.log(rateLimits);
           setRateLimit(rateLimits);
           return response.json();
         })
-        .then((dataBook) => {
-          setData(dataBook);
-          console.log(dataBook);
+        .then((weatherData) => {
+          setData(weatherData);
+          console.log(data);
         })
         .catch((err) => console.log(err));
     };
-    if (search) console.log(search);
-    else GetCurrentWeather();
+    const DailySequence = () => {
+      let temp = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      const today = temp[new Date().getDay()];
+      while (true) {
+        let current = temp.shift();
+        if (current === today) return setDailySeq(temp);
+        else if (current) temp.push(current);
+      }
+    };
+    if (search) {
+      console.log(search);
+    } else {
+      GetCurrentWeather();
+      DailySequence();
+    }
   }, []);
+
+  const SampleCurrent: CurrentCardVM = {
+    city: "Carney",
+    country: "US",
+    sunrise: 1641471967,
+    sunset: 1641471967,
+    temperature: 275.48,
+    weather: {
+      main: "Clear",
+      description: "clear sky",
+    },
+    daily: [
+      {
+        temperature: {
+          day: 275.37,
+          night: 272.81,
+        },
+        weather: {
+          main: "Snow",
+          description: "light snow",
+        },
+      },
+      {
+        temperature: {
+          day: 270.29,
+          night: 267.38,
+        },
+        weather: {
+          main: "Snow",
+          description: "snow",
+        },
+      },
+      {
+        temperature: {
+          day: 270.58,
+          night: 270.02,
+        },
+        weather: {
+          main: "Clear",
+          description: "clear sky",
+        },
+      },
+      {
+        temperature: {
+          day: 273.79,
+          night: 275.64,
+        },
+        weather: {
+          main: "Rain",
+          description: "moderate rain",
+        },
+      },
+      {
+        temperature: {
+          day: 272.14,
+          night: 268.52,
+        },
+        weather: {
+          main: "Rain",
+          description: "light rain",
+        },
+      },
+      {
+        temperature: {
+          day: 268.73,
+          night: 268.26,
+        },
+        weather: {
+          main: "Clouds",
+          description: "broken clouds",
+        },
+      },
+    ],
+  };
 
   return (
     <MainPageContainer>
@@ -120,16 +213,30 @@ function MainPage() {
         backGroundColor={TemperatureColorGenerator(SampleCurrent.temperature)}
       >
         <CurrentCard
+          toCelsius={toCelsius}
           Temperature={SampleCurrent.temperature}
           Description={SampleCurrent.weather.description}
           Location={{ City: "lagos", Country: "NG" }}
           Weather={SampleCurrent.weather.main}
         />
-        <DailyCard
-          Date="MON"
-          Temperature={SampleDay.temperature.day}
-          Weather={SampleDay.weather.main}
-        />
+        <DailyCardContainer>
+          {SampleCurrent.daily.map((element, index) => (
+            <DailyCard
+              key={index}
+              Date={dailySeq[index]}
+              Temperature={
+                toCelsius
+                  ? parseInt(
+                      KelvinToCelsius(element.temperature.day).toFixed(2)
+                    )
+                  : parseInt(
+                      KelvinToFahrenheit(element.temperature.day).toFixed(2)
+                    )
+              }
+              Weather={element.weather.main}
+            />
+          ))}
+        </DailyCardContainer>
       </BGcolorContainer>
       <RateLimitContainer>
         {rateLimit.remaining}/{rateLimit.limit}
@@ -213,20 +320,24 @@ interface CurrentCardProps {
     City: string;
     Country: string;
   };
-  Weather: WEATHER;
+  Weather: string;
+  toCelsius: boolean;
 }
 const CurrentCard = ({
   Temperature,
   Description,
   Location,
   Weather,
+  toCelsius,
 }: CurrentCardProps) => {
   return (
     <CurrentCardContainer>
       <CurrentDayTime />
       <TemperatureContain>
-        {Temperature}
-        <span>°c</span>
+        {toCelsius
+          ? KelvinToCelsius(Temperature).toFixed(2)
+          : KelvinToFahrenheit(Temperature).toFixed(2)}
+        {toCelsius? <span>°c</span>  : <span>°F</span>}
       </TemperatureContain>
       <LocationContain>
         {Location.City}, {Location.Country}

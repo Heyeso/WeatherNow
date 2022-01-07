@@ -7,6 +7,7 @@ const DailyCardContainer = styled.section`
   position: relative;
   max-width: 90px;
   height: fit-content;
+  margin: 0 10px;
   padding: 15px 10px;
   color: ${COLORS.TEXT};
   display: flex;
@@ -61,7 +62,7 @@ const TemperatureContain = styled.p`
 interface Props {
   Date: string;
   Temperature: number;
-  Weather: WEATHER;
+  Weather: string;
 }
 function DailyCard({ Date, Temperature, Weather }: Props) {
   return (

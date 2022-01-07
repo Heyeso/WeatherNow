@@ -4,7 +4,7 @@ import styled from "styled-components";
 import {
   COLORS,
   CurrentCardVM,
-  DailyCardVM,
+  GetWEATHER,
   KelvinToCelsius,
   KelvinToFahrenheit,
   RateLimit,
@@ -12,8 +12,9 @@ import {
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
-import { SunnyIcon } from "./components/assets/weather.icon";
+import { AtmosphereIcon, AtmosphereNightIcon, CloudyIcon, CloudyNightIcon, NightIcon, RainIcon, RainNightIcon, RainSunnyIcon, SnowIcon, SnowNightIcon, SunnyIcon, ThunderIcon, ThunderNightIcon } from "./components/assets/weather.icon";
 import DailyCard from "./components/dailycard";
+import CurrentCard from "./currentcard";
 
 const RateLimitContainer = styled.div`
   opacity: 0.5;
@@ -58,20 +59,93 @@ const DailyCardContainer = styled.section`
   display: flex;
   max-width: fit-content;
   margin: 20px 0 0;
-  padding: 0;
+  padding: 30px 20px 40px;
   overflow-x: auto;
   flex-wrap: nowrap;
 `;
 
-const SampleDay: DailyCardVM = {
-  temperature: {
-    day: 13,
-    night: 11,
-  },
+const SampleCurrent: CurrentCardVM = {
+  city: "Carney",
+  country: "US",
+  sunrise: 1641558363,
+  sunset: 1641592682,
+  temperature: 271.8,
   weather: {
-    main: WEATHER.SUNNY,
-    description: "Clear Sunny",
+    main: "Snow",
+    description: "snow",
   },
+  daily: [
+    {
+      temperature: {
+        max: 271.99,
+        min: 266.94,
+      },
+      weather: {
+        main: "Snow",
+        description: "snow",
+      },
+    },
+    {
+      temperature: {
+        max: 271.4,
+        min: 265.18,
+      },
+      weather: {
+        main: "Clear",
+        description: "clear sky",
+      },
+    },
+    {
+      temperature: {
+        max: 277.71,
+        min: 270.04,
+      },
+      weather: {
+        main: "Rain",
+        description: "moderate rain",
+      },
+    },
+    {
+      temperature: {
+        max: 276.55,
+        min: 268.44,
+      },
+      weather: {
+        main: "Clouds",
+        description: "broken clouds",
+      },
+    },
+    {
+      temperature: {
+        max: 268.46,
+        min: 265.87,
+      },
+      weather: {
+        main: "Clouds",
+        description: "scattered clouds",
+      },
+    },
+    {
+      temperature: {
+        max: 272.88,
+        min: 266.21,
+      },
+      weather: {
+        main: "Clouds",
+        description: "broken clouds",
+      },
+    },
+    {
+      temperature: {
+        max: 276.62,
+        min: 271.93,
+      },
+      weather: {
+        main: "Clouds",
+        description: "broken clouds",
+      },
+    },
+  ],
 };
 
 interface BGProps {
@@ -83,6 +157,7 @@ function MainPage() {
 
   const [data, setData] = useState<CurrentCardVM | null>(null);
   const [toCelsius, setToCelsius] = useState<boolean>(true);
+  const [isDay, setIsDay] = useState<boolean>(true);
   const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
@@ -111,8 +186,11 @@ function MainPage() {
           return response.json();
         })
         .then((weatherData) => {
-          setData(weatherData);
-          console.log(data);
+          setData(SampleCurrent);
+          setIsDay(
+            new Date().getHours() <
+              new Date((data ? data.sunset : 0) * 1000).getHours()
+          );
         })
         .catch((err) => console.log(err));
     };
@@ -121,8 +199,10 @@ function MainPage() {
       const today = temp[new Date().getDay()];
       while (true) {
         let current = temp.shift();
-        if (current === today) return setDailySeq(temp);
-        else if (current) temp.push(current);
+        if (current === today) {
+          temp.push(current);
+          return setDailySeq(temp);
+        } else if (current) temp.push(current);
       }
     };
     if (search) {
@@ -133,111 +213,55 @@ function MainPage() {
     }
   }, []);
 
-  const SampleCurrent: CurrentCardVM = {
-    city: "Carney",
-    country: "US",
-    sunrise: 1641471967,
-    sunset: 1641471967,
-    temperature: 275.48,
-    weather: {
-      main: "Clear",
-      description: "clear sky",
-    },
-    daily: [
-      {
-        temperature: {
-          day: 275.37,
-          night: 272.81,
-        },
-        weather: {
-          main: "Snow",
-          description: "light snow",
-        },
-      },
-      {
-        temperature: {
-          day: 270.29,
-          night: 267.38,
-        },
-        weather: {
-          main: "Snow",
-          description: "snow",
-        },
-      },
-      {
-        temperature: {
-          day: 270.58,
-          night: 270.02,
-        },
-        weather: {
-          main: "Clear",
-          description: "clear sky",
-        },
-      },
-      {
-        temperature: {
-          day: 273.79,
-          night: 275.64,
-        },
-        weather: {
-          main: "Rain",
-          description: "moderate rain",
-        },
-      },
-      {
-        temperature: {
-          day: 272.14,
-          night: 268.52,
-        },
-        weather: {
-          main: "Rain",
-          description: "light rain",
-        },
-      },
-      {
-        temperature: {
-          day: 268.73,
-          night: 268.26,
-        },
-        weather: {
-          main: "Clouds",
-          description: "broken clouds",
-        },
-      },
-    ],
-  };
-
   return (
     <MainPageContainer>
-      <BGcolorContainer
-        backGroundColor={TemperatureColorGenerator(SampleCurrent.temperature)}
-      >
-        <CurrentCard
-          toCelsius={toCelsius}
-          Temperature={SampleCurrent.temperature}
-          Description={SampleCurrent.weather.description}
-          Location={{ City: "lagos", Country: "NG" }}
-          Weather={SampleCurrent.weather.main}
-        />
-        <DailyCardContainer>
-          {SampleCurrent.daily.map((element, index) => (
-            <DailyCard
-              key={index}
-              Date={dailySeq[index]}
-              Temperature={
-                toCelsius
-                  ? parseInt(
-                      KelvinToCelsius(element.temperature.day).toFixed(2)
-                    )
-                  : parseInt(
-                      KelvinToFahrenheit(element.temperature.day).toFixed(2)
-                    )
-              }
-              Weather={element.weather.main}
-            />
-          ))}
-        </DailyCardContainer>
-      </BGcolorContainer>
+      {data && (
+        <BGcolorContainer
+          backGroundColor={TemperatureColorGenerator(
+            KelvinToCelsius(data.temperature)
+          )}
+        >
+          <CurrentCard
+            isDay={isDay}
+            toCelsius={toCelsius}
+            Temperature={data.temperature}
+            Description={data.weather.description}
+            Location={{
+              City: data.city,
+              Country: data.country,
+            }}
+            Weather={data.weather.main}
+          />
+          <DailyCardContainer>
+            {data.daily.map((element, index) => (
+              <DailyCard
+                key={index}
+                Date={dailySeq[index]}
+                Temperature={
+                  toCelsius
+                    ? {
+                        max: parseInt(
+                          KelvinToCelsius(element.temperature.max).toFixed(2)
+                        ),
+                        min: parseInt(
+                          KelvinToCelsius(element.temperature.min).toFixed(2)
+                        ),
+                      }
+                    : {
+                        max: parseInt(
+                          KelvinToFahrenheit(element.temperature.max).toFixed(2)
+                        ),
+                        min: parseInt(
+                          KelvinToFahrenheit(element.temperature.min).toFixed(2)
+                        ),
+                      }
+                }
+                Weather={GetWEATHER(element.weather.main)}
+              />
+            ))}
+          </DailyCardContainer>
+        </BGcolorContainer>
+      )}
       <RateLimitContainer>
         {rateLimit.remaining}/{rateLimit.limit}
         <span>REQUESTS LEFT</span>
@@ -247,162 +271,30 @@ function MainPage() {
 }
 export default MainPage;
 
-const CurrentCardContainer = styled.section`
-  box-sizing: border-box;
-  position: relative;
-  max-width: 640px;
-  height: fit-content;
-  padding: 15px;
-  color: ${COLORS.TEXT};
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  /* imporve performance of blur filter */
-  -webkit-backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  -webkit-transform: translate3d(0, 0, 0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  transform: translate3d(0, 0, 0);
-  transform: translateZ(0);
-`;
-const TemperatureContain = styled.div`
-  display: flex;
-  width: fit-content;
-  height: fit-content;
-  font-family: "Montserrat light";
-  font-size: 170px;
-  line-height: 100%;
-  text-align: center;
-  margin: 10px 0;
-  span {
-    width: fit-content;
-    height: fit-content;
-    font-family: "Montserrat light";
-    font-size: 48px;
-    line-height: normal;
+export const getIcon = (weather_condition: WEATHER, isDay_bool: boolean) => {
+  switch (weather_condition) {
+    case WEATHER.SUNNY:
+      if (isDay_bool) return <SunnyIcon />;
+      else return <NightIcon />;
+    case WEATHER.CLOUDY:
+      if (isDay_bool) return <CloudyIcon />;
+      else return <CloudyNightIcon />;
+    case WEATHER.RAIN:
+      if (isDay_bool) return <RainIcon />;
+      else return <RainNightIcon />;
+    case WEATHER.RAIN_SUNNY:
+      if (isDay_bool) return <RainSunnyIcon />;
+      else return <RainNightIcon />;
+    case WEATHER.SNOW:
+      if (isDay_bool) return <SnowIcon />;
+      else return <SnowNightIcon />;
+    case WEATHER.THUNDER:
+      if (isDay_bool) return <ThunderIcon />;
+      else return <ThunderNightIcon />;
+    case WEATHER.ATMOSPHERE:
+      if (isDay_bool) return <AtmosphereIcon />;
+      else return <AtmosphereNightIcon />;
+    default:
+      return <SunnyIcon />;
   }
-`;
-const LocationContain = styled.p`
-  width: fit-content;
-  height: fit-content;
-  font-family: "Montserrat semi-bold";
-  font-size: 18px;
-  text-align: center;
-  margin: 10px 0 0;
-`;
-const DescriptionContain = styled.div`
-  width: fit-content;
-  height: fit-content;
-  font-family: "Montserrat regular";
-  font-size: 18px;
-  text-align: center;
-  margin: 10px 0;
-`;
-const WeatherContain = styled.p`
-  svg {
-    width: 90px;
-    height: 90px;
-  }
-`;
-interface CurrentCardProps {
-  Temperature: number;
-  Description: string;
-  Location: {
-    City: string;
-    Country: string;
-  };
-  Weather: string;
-  toCelsius: boolean;
-}
-const CurrentCard = ({
-  Temperature,
-  Description,
-  Location,
-  Weather,
-  toCelsius,
-}: CurrentCardProps) => {
-  return (
-    <CurrentCardContainer>
-      <CurrentDayTime />
-      <TemperatureContain>
-        {toCelsius
-          ? KelvinToCelsius(Temperature).toFixed(2)
-          : KelvinToFahrenheit(Temperature).toFixed(2)}
-        {toCelsius? <span>°c</span>  : <span>°F</span>}
-      </TemperatureContain>
-      <LocationContain>
-        {Location.City}, {Location.Country}
-      </LocationContain>
-      <DescriptionContain>{Description}</DescriptionContain>
-      <WeatherContain>
-        <SunnyIcon />
-      </WeatherContain>
-    </CurrentCardContainer>
-  );
-};
-
-const CurrentTimeContainer = styled.div`
-  margin: 0;
-  padding: 0;
-  font-family: "Montserrat light";
-  font-size: 48px;
-  text-align: center;
-  span {
-    margin-left: 3px;
-    width: fit-content;
-    height: fit-content;
-    font-family: "Montserrat medium";
-    font-size: 16px;
-  }
-`;
-const CurrentDayContainer = styled.div`
-  width: fit-content;
-  margin: 10px 0;
-  padding: 0;
-  font-family: "Montserrat medium";
-  font-size: 16px;
-  text-align: center;
-`;
-const CurrentDayTime = () => {
-  const [time, setTime] = useState<Date>();
-  useEffect(() => {
-    const intervalID = setInterval(() => {
-      setTime(() => tick());
-    }, 1000);
-
-    return () => clearInterval(intervalID);
-  }, []);
-
-  const tick = () => {
-    return new Date();
-  };
-
-  const getHour = () => {
-    if (time)
-      if (time.getHours() <= 12) return time.getHours();
-      else return time.getHours() % 12;
-
-    return "";
-  };
-
-  return (
-    <>
-      <CurrentTimeContainer>
-        {time && `${getHour()}:${time.getMinutes()}`}
-        <span>{time && time.getHours() > 11 ? "PM" : "AM"}</span>
-      </CurrentTimeContainer>
-      <CurrentDayContainer>
-        {time && `${time.toDateString()}`}
-      </CurrentDayContainer>
-    </>
-  );
 };

@@ -1,12 +1,21 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import { COLORS, DailyCardVM, WEATHER } from "../../../utils/constants";
-import { SunnyIcon, NightIcon } from "./assets/weather.icon";
+import { COLORS, WEATHER } from "../../../utils/constants";
+import {
+  SunnyIcon,
+  CloudyIcon,
+  RainIcon,
+  RainSunnyIcon,
+  SnowIcon,
+  ThunderIcon,
+  AtmosphereIcon,
+} from "../../../assets/weather.icon";
 
 const DailyCardContainer = styled.section`
   position: relative;
-  max-width: 90px;
+  max-width: 50px;
   height: fit-content;
+  margin: 0 10px;
   padding: 15px 10px;
   color: ${COLORS.TEXT};
   display: flex;
@@ -32,47 +41,79 @@ const DailyCardContainer = styled.section`
 const DateContain = styled.p`
   width: fit-content;
   height: fit-content;
-  font-family: "Montserrat regular";
-  font-size: 18px;
+  font-family: "Montserrat medium";
+  font-size: 16px;
   text-align: center;
   margin: 0;
 `;
 const WeatherContain = styled.p`
   svg {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
   }
 `;
-const TemperatureContain = styled.p`
+const TemperatureContain = styled.div`
+  color: ${COLORS.TEXT};
   display: flex;
   width: fit-content;
   height: fit-content;
-  font-family: "Montserrat light";
-  font-size: 36px;
+  font-family: "Montserrat regular";
+  font-size: 18px;
   text-align: center;
   margin: 0;
-  span {
-    width: fit-content;
-    height: fit-content;
-    font-family: "Montserrat light";
-    font-size: 24px;
+  flex-direction: column;
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  .min {
+    padding-top: 5px;
+    font-size: 14px;
+    opacity: 0.7;
   }
 `;
 interface Props {
   Date: string;
-  Temperature: number;
+  Temperature: {
+    max: number;
+    min: number;
+  };
   Weather: WEATHER;
 }
 function DailyCard({ Date, Temperature, Weather }: Props) {
+  const getIcon = (weather_condition: WEATHER) => {
+    switch (weather_condition) {
+      case WEATHER.SUNNY:
+        return <SunnyIcon />;
+      case WEATHER.CLOUDY:
+        return <CloudyIcon />;
+      case WEATHER.RAIN:
+        return <RainIcon />;
+      case WEATHER.RAIN_SUNNY:
+        return <RainSunnyIcon />;
+      case WEATHER.SNOW:
+        return <SnowIcon />;
+      case WEATHER.THUNDER:
+        return <ThunderIcon />;
+      case WEATHER.ATMOSPHERE:
+        return <AtmosphereIcon />;
+      default:
+        return <SunnyIcon />;
+    }
+  };
   return (
     <DailyCardContainer>
       <DateContain>{Date}</DateContain>
-      <WeatherContain>
-        <SunnyIcon />
-      </WeatherContain>
+      <WeatherContain>{getIcon(Weather)}</WeatherContain>
       <TemperatureContain>
-        {Temperature}
-        <span>°</span>
+        <p className="max">
+          {Temperature.max}
+          <span>°</span>
+        </p>
+        <p className="min">
+          {Temperature.min}
+          <span>°</span>
+        </p>
       </TemperatureContain>
     </DailyCardContainer>
   );

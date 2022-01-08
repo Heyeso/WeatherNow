@@ -17,11 +17,11 @@ export enum WEATHER {
 
 export interface DailyCardVM {
   temperature: {
-    day: number;
-    night: number;
+    max: number;
+    min: number;
   };
   weather: {
-    main: WEATHER;
+    main: string;
     description: string;
   };
 }
@@ -33,8 +33,8 @@ export interface CurrentCardVM {
   sunset: number;
   temperature: number;
   weather: {
-      main: WEATHER;
-      description: string;
+    main: string;
+    description: string;
   };
   daily: DailyCardVM[];
 }
@@ -46,8 +46,8 @@ export interface SearchCardVM {
   sunset: number;
   temperature: number;
   weather: {
-      main: WEATHER;
-      description: string;
+    main: string;
+    description: string;
   };
 }
 
@@ -55,3 +55,22 @@ export interface RateLimit {
   limit: string | null;
   remaining: string | null;
 }
+
+export const KelvinToCelsius = (value: number) => {
+  return value - 273.15;
+};
+
+export const KelvinToFahrenheit = (value: number) => {
+  return ((value - 273.15) * 9) / 5 + 32;
+};
+
+export const GetWEATHER = (weather: string) => {
+  if (weather === "Clear") return WEATHER.SUNNY;
+  if (weather === "Clouds") return WEATHER.CLOUDY;
+  if (weather === "Rain") return WEATHER.RAIN_SUNNY;
+  if (weather === "Drizzle") return WEATHER.RAIN;
+  if (weather === "Snow") return WEATHER.SNOW;
+  if (weather === "Thunderstorm") return WEATHER.THUNDER;
+
+  return WEATHER.ATMOSPHERE;
+};

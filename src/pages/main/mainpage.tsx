@@ -4,14 +4,17 @@ import styled from "styled-components";
 import {
   COLORS,
   CurrentCardVM,
-  DailyCardVM,
+  GetWEATHER,
+  KelvinToCelsius,
+  KelvinToFahrenheit,
   RateLimit,
   SearchCardVM,
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
-import { SunnyIcon } from "./components/assets/weather.icon";
+import { AtmosphereIcon, AtmosphereNightIcon, CloudyIcon, CloudyNightIcon, NightIcon, RainIcon, RainNightIcon, RainSunnyIcon, SnowIcon, SnowNightIcon, SunnyIcon, ThunderIcon, ThunderNightIcon } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
+import CurrentCard from "./currentcard";
 
 const RateLimitContainer = styled.div`
   opacity: 0.5;
@@ -52,29 +55,14 @@ const BGcolorContainer = styled.div<BGProps>`
   background-color: ${(props) => props.backGroundColor || "white"};
 `;
 
-const SampleDay: DailyCardVM = {
-  temperature: {
-    day: 13,
-    night: 11,
-  },
-  weather: {
-    main: WEATHER.SUNNY,
-    description: "Clear Sunny",
-  },
-};
-
-const SampleCurrent: CurrentCardVM = {
-  city: "Lagos",
-  country: "NG",
-  sunrise: 1485762037,
-  sunset: 1485794875,
-  temperature: 14,
-  weather: {
-    main: WEATHER.SUNNY,
-    description: "Clear Sunny",
-  },
-  daily: [SampleDay],
-};
+const DailyCardContainer = styled.section`
+  display: flex;
+  max-width: fit-content;
+  margin: 20px 0 0;
+  padding: 30px 20px 40px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+`;
 
 interface BGProps {
   backGroundColor?: string;
@@ -84,11 +72,21 @@ function MainPage() {
   const { search } = useParams();
 
   const [data, setData] = useState<CurrentCardVM | null>(null);
+  const [toCelsius, setToCelsius] = useState<boolean>(true);
+  const [isDay, setIsDay] = useState<boolean>(true);
   const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
   });
+  const [dailySeq, setDailySeq] = useState<string[]>([
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT",
+  ]);
 
   useEffect(() => {
     const GetCurrentWeather = async () => {
@@ -100,37 +98,86 @@ function MainPage() {
             limit: response.headers.get("X-RateLimit-Limit"),
             remaining: response.headers.get("X-RateLimit-Remaining"),
           };
-          console.log(rateLimits);
           setRateLimit(rateLimits);
           return response.json();
         })
-        .then((dataBook) => {
-          setData(dataBook);
-          console.log(dataBook);
+        .then((weatherData) => {
+          setData(weatherData);
+          setIsDay(
+            new Date().getHours() <
+              new Date((data ? data.sunset : 0) * 1000).getHours()
+          );
         })
         .catch((err) => console.log(err));
     };
-    if (search) console.log(search);
-    else GetCurrentWeather();
+    const DailySequence = () => {
+      let temp = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      const today = temp[new Date().getDay()];
+      while (true) {
+        let current = temp.shift();
+        if (current === today) {
+          temp.push(current);
+          return setDailySeq(temp);
+        } else if (current) temp.push(current);
+      }
+    };
+    if (search) {
+      console.log(search);
+    } else {
+      GetCurrentWeather();
+      DailySequence();
+    }
   }, []);
 
   return (
     <MainPageContainer>
-      <BGcolorContainer
-        backGroundColor={TemperatureColorGenerator(SampleCurrent.temperature)}
-      >
-        <CurrentCard
-          Temperature={SampleCurrent.temperature}
-          Description={SampleCurrent.weather.description}
-          Location={{ City: "lagos", Country: "NG" }}
-          Weather={SampleCurrent.weather.main}
-        />
-        <DailyCard
-          Date="MON"
-          Temperature={SampleDay.temperature.day}
-          Weather={SampleDay.weather.main}
-        />
-      </BGcolorContainer>
+      {data && (
+        <BGcolorContainer
+          backGroundColor={TemperatureColorGenerator(
+            KelvinToCelsius(data.temperature)
+          )}
+        >
+          <CurrentCard
+            isDay={isDay}
+            toCelsius={toCelsius}
+            Temperature={data.temperature}
+            Description={data.weather.description}
+            Location={{
+              City: data.city,
+              Country: data.country,
+            }}
+            Weather={data.weather.main}
+          />
+          <DailyCardContainer>
+            {data.daily.map((element, index) => (
+              <DailyCard
+                key={index}
+                Date={dailySeq[index]}
+                Temperature={
+                  toCelsius
+                    ? {
+                        max: parseInt(
+                          KelvinToCelsius(element.temperature.max).toFixed(2)
+                        ),
+                        min: parseInt(
+                          KelvinToCelsius(element.temperature.min).toFixed(2)
+                        ),
+                      }
+                    : {
+                        max: parseInt(
+                          KelvinToFahrenheit(element.temperature.max).toFixed(2)
+                        ),
+                        min: parseInt(
+                          KelvinToFahrenheit(element.temperature.min).toFixed(2)
+                        ),
+                      }
+                }
+                Weather={GetWEATHER(element.weather.main)}
+              />
+            ))}
+          </DailyCardContainer>
+        </BGcolorContainer>
+      )}
       <RateLimitContainer>
         {rateLimit.remaining}/{rateLimit.limit}
         <span>REQUESTS LEFT</span>
@@ -140,158 +187,30 @@ function MainPage() {
 }
 export default MainPage;
 
-const CurrentCardContainer = styled.section`
-  box-sizing: border-box;
-  position: relative;
-  max-width: 640px;
-  height: fit-content;
-  padding: 15px;
-  color: ${COLORS.TEXT};
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  /* imporve performance of blur filter */
-  -webkit-backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  -webkit-transform: translate3d(0, 0, 0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  transform: translate3d(0, 0, 0);
-  transform: translateZ(0);
-`;
-const TemperatureContain = styled.div`
-  display: flex;
-  width: fit-content;
-  height: fit-content;
-  font-family: "Montserrat light";
-  font-size: 170px;
-  line-height: 100%;
-  text-align: center;
-  margin: 10px 0;
-  span {
-    width: fit-content;
-    height: fit-content;
-    font-family: "Montserrat light";
-    font-size: 48px;
-    line-height: normal;
+export const getIcon = (weather_condition: WEATHER, isDay_bool: boolean) => {
+  switch (weather_condition) {
+    case WEATHER.SUNNY:
+      if (isDay_bool) return <SunnyIcon />;
+      else return <NightIcon />;
+    case WEATHER.CLOUDY:
+      if (isDay_bool) return <CloudyIcon />;
+      else return <CloudyNightIcon />;
+    case WEATHER.RAIN:
+      if (isDay_bool) return <RainIcon />;
+      else return <RainNightIcon />;
+    case WEATHER.RAIN_SUNNY:
+      if (isDay_bool) return <RainSunnyIcon />;
+      else return <RainNightIcon />;
+    case WEATHER.SNOW:
+      if (isDay_bool) return <SnowIcon />;
+      else return <SnowNightIcon />;
+    case WEATHER.THUNDER:
+      if (isDay_bool) return <ThunderIcon />;
+      else return <ThunderNightIcon />;
+    case WEATHER.ATMOSPHERE:
+      if (isDay_bool) return <AtmosphereIcon />;
+      else return <AtmosphereNightIcon />;
+    default:
+      return <SunnyIcon />;
   }
-`;
-const LocationContain = styled.p`
-  width: fit-content;
-  height: fit-content;
-  font-family: "Montserrat semi-bold";
-  font-size: 18px;
-  text-align: center;
-  margin: 10px 0 0;
-`;
-const DescriptionContain = styled.div`
-  width: fit-content;
-  height: fit-content;
-  font-family: "Montserrat regular";
-  font-size: 18px;
-  text-align: center;
-  margin: 10px 0;
-`;
-const WeatherContain = styled.p`
-  svg {
-    width: 90px;
-    height: 90px;
-  }
-`;
-interface CurrentCardProps {
-  Temperature: number;
-  Description: string;
-  Location: {
-    City: string;
-    Country: string;
-  };
-  Weather: WEATHER;
-}
-const CurrentCard = ({
-  Temperature,
-  Description,
-  Location,
-  Weather,
-}: CurrentCardProps) => {
-  return (
-    <CurrentCardContainer>
-      <CurrentDayTime />
-      <TemperatureContain>
-        {Temperature}
-        <span>°c</span>
-      </TemperatureContain>
-      <LocationContain>
-        {Location.City}, {Location.Country}
-      </LocationContain>
-      <DescriptionContain>{Description}</DescriptionContain>
-      <WeatherContain>
-        <SunnyIcon />
-      </WeatherContain>
-    </CurrentCardContainer>
-  );
-};
-
-const CurrentTimeContainer = styled.div`
-  margin: 0;
-  padding: 0;
-  font-family: "Montserrat light";
-  font-size: 48px;
-  text-align: center;
-  span {
-    margin-left: 3px;
-    width: fit-content;
-    height: fit-content;
-    font-family: "Montserrat medium";
-    font-size: 16px;
-  }
-`;
-const CurrentDayContainer = styled.div`
-  width: fit-content;
-  margin: 10px 0;
-  padding: 0;
-  font-family: "Montserrat medium";
-  font-size: 16px;
-  text-align: center;
-`;
-const CurrentDayTime = () => {
-  const [time, setTime] = useState<Date>();
-  useEffect(() => {
-    const intervalID = setInterval(() => {
-      setTime(() => tick());
-    }, 1000);
-
-    return () => clearInterval(intervalID);
-  }, []);
-
-  const tick = () => {
-    return new Date();
-  };
-
-  const getHour = () => {
-    if (time)
-      if (time.getHours() <= 12) return time.getHours();
-      else return time.getHours() % 12;
-
-    return "";
-  };
-
-  return (
-    <>
-      <CurrentTimeContainer>
-        {time && `${getHour()}:${time.getMinutes()}`}
-        <span>{time && time.getHours() > 11 ? "PM" : "AM"}</span>
-      </CurrentTimeContainer>
-      <CurrentDayContainer>
-        {time && `${time.toDateString()}`}
-      </CurrentDayContainer>
-    </>
-  );
 };

@@ -9,7 +9,7 @@ import {
   SnowIcon,
   ThunderIcon,
   AtmosphereIcon,
-} from "./assets/weather.icon";
+} from "../../../assets/weather.icon";
 
 const DailyCardContainer = styled.section`
   position: relative;

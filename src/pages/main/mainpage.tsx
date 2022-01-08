@@ -12,7 +12,7 @@ import {
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
-import { AtmosphereIcon, AtmosphereNightIcon, CloudyIcon, CloudyNightIcon, NightIcon, RainIcon, RainNightIcon, RainSunnyIcon, SnowIcon, SnowNightIcon, SunnyIcon, ThunderIcon, ThunderNightIcon } from "./components/assets/weather.icon";
+import { AtmosphereIcon, AtmosphereNightIcon, CloudyIcon, CloudyNightIcon, NightIcon, RainIcon, RainNightIcon, RainSunnyIcon, SnowIcon, SnowNightIcon, SunnyIcon, ThunderIcon, ThunderNightIcon } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
 import CurrentCard from "./currentcard";
 
@@ -64,90 +64,6 @@ const DailyCardContainer = styled.section`
   flex-wrap: nowrap;
 `;
 
-const SampleCurrent: CurrentCardVM = {
-  city: "Carney",
-  country: "US",
-  sunrise: 1641558363,
-  sunset: 1641592682,
-  temperature: 271.8,
-  weather: {
-    main: "Snow",
-    description: "snow",
-  },
-  daily: [
-    {
-      temperature: {
-        max: 271.99,
-        min: 266.94,
-      },
-      weather: {
-        main: "Snow",
-        description: "snow",
-      },
-    },
-    {
-      temperature: {
-        max: 271.4,
-        min: 265.18,
-      },
-      weather: {
-        main: "Clear",
-        description: "clear sky",
-      },
-    },
-    {
-      temperature: {
-        max: 277.71,
-        min: 270.04,
-      },
-      weather: {
-        main: "Rain",
-        description: "moderate rain",
-      },
-    },
-    {
-      temperature: {
-        max: 276.55,
-        min: 268.44,
-      },
-      weather: {
-        main: "Clouds",
-        description: "broken clouds",
-      },
-    },
-    {
-      temperature: {
-        max: 268.46,
-        min: 265.87,
-      },
-      weather: {
-        main: "Clouds",
-        description: "scattered clouds",
-      },
-    },
-    {
-      temperature: {
-        max: 272.88,
-        min: 266.21,
-      },
-      weather: {
-        main: "Clouds",
-        description: "broken clouds",
-      },
-    },
-    {
-      temperature: {
-        max: 276.62,
-        min: 271.93,
-      },
-      weather: {
-        main: "Clouds",
-        description: "broken clouds",
-      },
-    },
-  ],
-};
-
 interface BGProps {
   backGroundColor?: string;
 }
@@ -186,7 +102,7 @@ function MainPage() {
           return response.json();
         })
         .then((weatherData) => {
-          setData(SampleCurrent);
+          setData(weatherData);
           setIsDay(
             new Date().getHours() <
               new Date((data ? data.sunset : 0) * 1000).getHours()

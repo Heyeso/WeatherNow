@@ -6,7 +6,7 @@ import {
   KelvinToCelsius,
   KelvinToFahrenheit,
 } from "../../utils/constants";
-import { SunnyIcon } from "./components/assets/weather.icon";
+import { SunnyIcon } from "../../assets/weather.icon";
 import { getIcon } from "./mainpage";
 
 const CurrentCardContainer = styled.section`

@@ -29,7 +29,8 @@ import {
 } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
 import CurrentCard from "./currentcard";
-import BGImage from "./../../assets/78787.jpg"
+import BGImageDay from "./../../assets/day.png"
+import BGImageNight from "./../../assets/night.png"
 
 const RateLimitContainer = styled.div`
   opacity: 0.7;
@@ -49,7 +50,7 @@ const RateLimitContainer = styled.div`
   }
 `;
 
-const MainPageContainer = styled.section`
+const MainPageContainer = styled.section<BGProps>`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -57,7 +58,7 @@ const MainPageContainer = styled.section`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
-  background-image: url(${BGImage});
+  background-image: url(${(props) => props.isDay? BGImageDay: BGImageNight});
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
@@ -92,6 +93,7 @@ const DailyCardContainer = styled.section`
 
 interface BGProps {
   backGroundColor?: string;
+  isDay?: boolean;
 }
 
 function MainPage() {
@@ -158,7 +160,7 @@ function MainPage() {
   }, []);
 
   return (
-    <MainPageContainer>
+    <MainPageContainer isDay={isDay}>
       {data && (
         <BGcolorContainer
           backGroundColor={TemperatureColorGenerator(

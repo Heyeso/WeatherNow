@@ -32,6 +32,7 @@ export interface CurrentCardVM {
   sunrise: number;
   sunset: number;
   temperature: number;
+  feels_like: number;
   weather: {
     main: string;
     description: string;
@@ -45,6 +46,7 @@ export interface SearchCardVM {
   sunrise: number;
   sunset: number;
   temperature: number;
+  feels_like: number;
   weather: {
     main: string;
     description: string;

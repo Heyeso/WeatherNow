@@ -28,28 +28,29 @@ const colorChannelMixer = (
 const colorMixer = (
   rgbA: Array<number>,
   rgbB: Array<number>,
-  amountToMix: number
+  amountToMix: number,
+  opacity: number
 ) => {
   var r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
   var g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
   var b = colorChannelMixer(rgbA[2], rgbB[2], amountToMix);
-  return "rgb(" + r + "," + g + "," + b + ")";
+  return "rgba(" + r + "," + g + "," + b + "," + opacity + ")";
 };
 
-export const TemperatureColorGenerator = (temp: number) => {
-  if (temp >= TEMP[0]) return `rgb(${TEMP_COLORS[0]})`;
+export const TemperatureColorGenerator = (temp: number, opacity: number) => {
+  if (temp >= TEMP[0]) return `rgb(${TEMP_COLORS[0]}, ${opacity})`;
   if (temp <= TEMP[TEMP.length - 1])
-    return `rgb(${TEMP_COLORS[TEMP.length - 1]})`;
+    return `rgba(${TEMP_COLORS[TEMP.length - 1]}, ${opacity})`;
   for (let x = 0; x < TEMP.length - 1; x++) {
-    if (TEMP[x] === temp) return `rgb(${TEMP_COLORS[x]})`;
+    if (TEMP[x] === temp) return `rgba(${TEMP_COLORS[x]}, ${opacity})`;
 
     if (temp < TEMP[x] && temp > TEMP[x + 1]) {
       let max = TEMP[x],
         min = TEMP[x + 1];
       let ratio = (temp - min) / (max - min);
-      return colorMixer(TEMP_COLORS[x], TEMP_COLORS[x + 1], ratio);
+      return colorMixer(TEMP_COLORS[x], TEMP_COLORS[x + 1], ratio, opacity);
     }
   }
 
-  return `rgb(0,0,0)`;
+  return `rgb(0,0,0,1)`;
 };

@@ -6,12 +6,12 @@ import {
   KelvinToCelsius,
   KelvinToFahrenheit,
 } from "../../utils/constants";
-import { SunnyIcon } from "../../assets/weather.icon";
 import { getIcon } from "./mainpage";
 
 const CurrentCardContainer = styled.section`
   box-sizing: border-box;
   position: relative;
+  width: 100%;
   max-width: 640px;
   height: fit-content;
   padding: 15px;
@@ -19,10 +19,10 @@ const CurrentCardContainer = styled.section`
   display: flex;
   align-items: center;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
 
@@ -46,6 +46,7 @@ const TemperatureContain = styled.div`
   text-align: center;
   margin: 50px 0;
   span {
+    cursor: pointer;
     width: fit-content;
     height: fit-content;
     font-family: "Montserrat regular";
@@ -84,6 +85,7 @@ interface CurrentCardProps {
     Country: string;
   };
   Weather: string;
+  setToCelsius: (value: boolean) => void;
   toCelsius: boolean;
 }
 const CurrentCard = ({
@@ -93,23 +95,26 @@ const CurrentCard = ({
   Weather,
   isDay,
   toCelsius,
+  setToCelsius,
 }: CurrentCardProps) => {
   return (
     <CurrentCardContainer>
       <CurrentDayTime />
       <TemperatureContain>
         {toCelsius
-          ? KelvinToCelsius(Temperature).toFixed(2)
-          : KelvinToFahrenheit(Temperature).toFixed(2)}
-        {toCelsius ? <span>°c</span> : <span>°F</span>}
+          ? KelvinToCelsius(Temperature).toFixed(0)
+          : KelvinToFahrenheit(Temperature).toFixed(0)}
+        {toCelsius ? (
+          <span onClick={() => setToCelsius(false)}>°c</span>
+        ) : (
+          <span onClick={() => setToCelsius(true)}>°F</span>
+        )}
       </TemperatureContain>
       <LocationContain>
         {Location.City}, {Location.Country}
       </LocationContain>
       <DescriptionContain>{Description}</DescriptionContain>
-      <WeatherContain>
-        {getIcon(GetWEATHER(Weather), isDay)}
-      </WeatherContain>
+      <WeatherContain>{getIcon(GetWEATHER(Weather), isDay)}</WeatherContain>
     </CurrentCardContainer>
   );
 };

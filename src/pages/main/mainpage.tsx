@@ -12,12 +12,27 @@ import {
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
-import { AtmosphereIcon, AtmosphereNightIcon, CloudyIcon, CloudyNightIcon, NightIcon, RainIcon, RainNightIcon, RainSunnyIcon, SnowIcon, SnowNightIcon, SunnyIcon, ThunderIcon, ThunderNightIcon } from "../../assets/weather.icon";
+import {
+  AtmosphereIcon,
+  AtmosphereNightIcon,
+  CloudyIcon,
+  CloudyNightIcon,
+  NightIcon,
+  RainIcon,
+  RainNightIcon,
+  RainSunnyIcon,
+  SnowIcon,
+  SnowNightIcon,
+  SunnyIcon,
+  ThunderIcon,
+  ThunderNightIcon,
+} from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
 import CurrentCard from "./currentcard";
+import BGImage from "./../../assets/78787.jpg"
 
 const RateLimitContainer = styled.div`
-  opacity: 0.5;
+  opacity: 0.7;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -42,21 +57,32 @@ const MainPageContainer = styled.section`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
+  background-image: url(${BGImage});
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
 `;
 
 const BGcolorContainer = styled.div<BGProps>`
   width: 100%;
   height: 100%;
+  padding: 0 10px;
   box-sizing: border-box;
   position: relative;
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: ${(props) => props.backGroundColor || "white"};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const DailyCardContainer = styled.section`
   display: flex;
+  width: 100%;
   max-width: fit-content;
   margin: 20px 0 0;
   padding: 30px 20px 40px;
@@ -105,7 +131,9 @@ function MainPage() {
           setData(weatherData);
           setIsDay(
             new Date().getHours() <
-              new Date((data ? data.sunset : 0) * 1000).getHours()
+              new Date((data ? data.sunset : 0) * 1000).getHours() &&
+              new Date().getHours() >
+                new Date((data ? data.sunrise : 0) * 1000).getHours()
           );
         })
         .catch((err) => console.log(err));
@@ -134,12 +162,13 @@ function MainPage() {
       {data && (
         <BGcolorContainer
           backGroundColor={TemperatureColorGenerator(
-            KelvinToCelsius(data.temperature)
+            KelvinToCelsius(data.temperature), 0.7
           )}
         >
           <CurrentCard
             isDay={isDay}
             toCelsius={toCelsius}
+            setToCelsius={setToCelsius}
             Temperature={data.temperature}
             Description={data.weather.description}
             Location={{
@@ -157,18 +186,18 @@ function MainPage() {
                   toCelsius
                     ? {
                         max: parseInt(
-                          KelvinToCelsius(element.temperature.max).toFixed(2)
+                          KelvinToCelsius(element.temperature.max).toFixed(0)
                         ),
                         min: parseInt(
-                          KelvinToCelsius(element.temperature.min).toFixed(2)
+                          KelvinToCelsius(element.temperature.min).toFixed(0)
                         ),
                       }
                     : {
                         max: parseInt(
-                          KelvinToFahrenheit(element.temperature.max).toFixed(2)
+                          KelvinToFahrenheit(element.temperature.max).toFixed(0)
                         ),
                         min: parseInt(
-                          KelvinToFahrenheit(element.temperature.min).toFixed(2)
+                          KelvinToFahrenheit(element.temperature.min).toFixed(0)
                         ),
                       }
                 }

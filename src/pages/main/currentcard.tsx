@@ -144,7 +144,7 @@ const CurrentDayContainer = styled.div`
   text-align: center;
 `;
 const CurrentDayTime = () => {
-  const [time, setTime] = useState<Date>();
+  const [time, setTime] = useState<Date>(new Date());
   useEffect(() => {
     const intervalID = setInterval(() => {
       setTime(() => tick());

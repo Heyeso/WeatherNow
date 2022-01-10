@@ -38,6 +38,7 @@ export interface CurrentCardVM {
     description: string;
   };
   daily: DailyCardVM[];
+  error?: string;
 }
 
 export interface SearchCardVM {

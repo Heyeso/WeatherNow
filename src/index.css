@@ -9,7 +9,6 @@ body,
   margin: 0;
 }
 .App {
-  background-color: rgb(226, 226, 226);
   overflow-y: auto;
   overflow-x: hidden;
 }

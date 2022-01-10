@@ -29,8 +29,9 @@ import {
 } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
 import CurrentCard from "./currentcard";
-import BGImageDay from "./../../assets/day.png"
-import BGImageNight from "./../../assets/night.png"
+import BGImageDay from "./../../assets/day.png";
+import BGImageNight from "./../../assets/night.png";
+import { Loading } from "../../App";
 
 const RateLimitContainer = styled.div`
   opacity: 0.7;
@@ -58,7 +59,7 @@ const MainPageContainer = styled.section<BGProps>`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
-  background-image: url(${(props) => props.isDay? BGImageDay: BGImageNight});
+  background-image: url(${(props) => props.isDay ? BGImageDay : BGImageNight});
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
@@ -115,7 +116,9 @@ function MainPage() {
     "FRI",
     "SAT",
   ]);
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const [status, setStatus] = useState<number>(400);
+  
   useEffect(() => {
     const GetCurrentWeather = async () => {
       await fetch(`http://localhost:3000`, {
@@ -127,6 +130,7 @@ function MainPage() {
             remaining: response.headers.get("X-RateLimit-Remaining"),
           };
           setRateLimit(rateLimits);
+          setStatus(response.status);
           return response.json();
         })
         .then((weatherData) => {
@@ -139,6 +143,7 @@ function MainPage() {
           );
         })
         .catch((err) => console.log(err));
+      setLoading(false);
     };
     const DailySequence = () => {
       let temp = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -159,12 +164,21 @@ function MainPage() {
     }
   }, []);
 
+  if (loading) return <Loading />;
+
+  if (status !== 200)
+    return (
+      <ServerError
+      />
+    );
+
   return (
-    <MainPageContainer isDay={isDay}>
-      {data && (
+    data && (
+      <MainPageContainer>
         <BGcolorContainer
           backGroundColor={TemperatureColorGenerator(
-            KelvinToCelsius(data.temperature), 0.7
+            KelvinToCelsius(data.temperature),
+            0.7
           )}
         >
           <CurrentCard
@@ -208,12 +222,12 @@ function MainPage() {
             ))}
           </DailyCardContainer>
         </BGcolorContainer>
-      )}
-      <RateLimitContainer>
-        {rateLimit.remaining}/{rateLimit.limit}
-        <span>REQUESTS LEFT</span>
-      </RateLimitContainer>
-    </MainPageContainer>
+        <RateLimitContainer>
+          {rateLimit.remaining}/{rateLimit.limit}
+          <span>REQUESTS LEFT</span>
+        </RateLimitContainer>
+      </MainPageContainer>
+    )
   );
 }
 export default MainPage;
@@ -244,4 +258,29 @@ export const getIcon = (weather_condition: WEATHER, isDay_bool: boolean) => {
     default:
       return <SunnyIcon />;
   }
+};
+
+const ServerErrorContainer = styled.div`
+  div {
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 18px;
+    color: ${COLORS.BLACK};
+    font-family: "Montserrat light";
+    text-align: center;
+    transform: translate(-50%, -50%);
+    span {
+      color: rgb(56, 192, 255);
+    }
+  }
+`;
+
+const ServerError = () => {
+  return (
+    <ServerErrorContainer>
+      <div>You are unable to access <span>WeatherNow</span> Servers at the moment, try again later or refresh the page.</div>
+    </ServerErrorContainer>
+  );
 };

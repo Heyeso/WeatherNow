@@ -7,6 +7,7 @@ import {
   GetWEATHER,
   KelvinToCelsius,
   KelvinToFahrenheit,
+  MONTH,
 } from "../../utils/constants";
 import { getIcon } from "./mainpage";
 
@@ -73,8 +74,8 @@ const WeatherContain = styled.p`
 const LocationContain = styled.p`
   width: fit-content;
   height: fit-content;
-  font-family: "Montserrat medium";
-  font-size: 20px;
+  font-family: "Montserrat semi-bold";
+  font-size: 16px;
   text-align: center;
   margin: 20px 0;
   text-transform: uppercase;
@@ -243,7 +244,7 @@ const CurrentDayTime = () => {
         <span>{time && time.getHours() > 11 ? "PM" : "AM"}</span>
       </CurrentTimeContainer>
       <CurrentDayContainer>
-        {time && `${DAY[time.getDay()]} ${time.getUTCDay()}`}
+        {time && `${DAY[time.getDay()]}, ${time.getUTCDate()} ${MONTH[time.getUTCMonth()]}`}
       </CurrentDayContainer>
     </>
   );

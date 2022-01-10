@@ -80,3 +80,4 @@ export const GetWEATHER = (weather: string) => {
 };
 
 export const DAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+export const MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];

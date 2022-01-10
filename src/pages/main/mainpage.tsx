@@ -110,7 +110,14 @@ function MainPage() {
     limit: "0",
     remaining: "0",
   });
-  const [dailySeq, setDailySeq] = useState<string[]>(DAY.splice(1));
+  const [dailySeq, setDailySeq] = useState<string[]>([
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT",
+  ]);
   const [loading, setLoading] = useState<boolean>(true);
   const [status, setStatus] = useState<number>(400);
 
@@ -136,7 +143,6 @@ function MainPage() {
               new Date().getHours() >
                 new Date((data ? data.sunrise : 0) * 1000).getHours()
           );
-          console.log(isDay)
         })
         .catch((err) => console.log(err));
       setLoading(false);

@@ -32,6 +32,7 @@ import CurrentCard from "./currentcard";
 import BGImageDay from "./../../assets/day.png";
 import BGImageNight from "./../../assets/night.png";
 import { Loading } from "../../App";
+import { Link } from "react-router-dom";
 
 const RateLimitContainer = styled.div`
   opacity: 0.7;
@@ -174,7 +175,7 @@ function MainPage() {
 
   return (
     data && (
-      <MainPageContainer>
+      <MainPageContainer isDay={isDay}>
         <BGcolorContainer
           backGroundColor={TemperatureColorGenerator(
             KelvinToCelsius(data.temperature),

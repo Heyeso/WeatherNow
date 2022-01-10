@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { NightIcon } from "../assets/weather.icon";
 import { COLORS } from "../utils/constants";
@@ -323,19 +324,24 @@ const Container = styled.div`
 `;
 const HomeButton = styled.div`
   cursor: pointer;
+  border: 1px solid ${COLORS.WHITE};
   display: inline-block;
   padding: 0.35em 1.2em;
-  border: 1px solid ${COLORS.WHITE};
   margin: 0 0.3em 0.3em 0;
   border-radius: 0.12em;
   box-sizing: border-box;
-  text-decoration: none;
   text-align: center;
   transition: all 0.2s;
   font-size: 24px;
   font-family: "Montserrat medium";
+  a {
+    color: ${COLORS.WHITE};
+    text-decoration: none;
+  }
   :hover {
-    color: #000000;
+    a {
+      color: #000000;
+    }
     background-color: #ffffff;
   }
   @media all and (max-width: 30em) {
@@ -351,8 +357,7 @@ function PageNotFound() {
       <div className="sky">
         <div className="night">
           {STARS.map((element, index) => (
-            <div className="shooting_star" key={index}>
-            </div>
+            <div className="shooting_star" key={index}></div>
           ))}
         </div>
         <div className="message">
@@ -362,7 +367,9 @@ function PageNotFound() {
             <span>4</span>
           </section>
           <p>Page Not Found</p>
-          <HomeButton>Home</HomeButton>
+          <HomeButton>
+            <Link to="/">Home</Link>
+          </HomeButton>
         </div>
       </div>
     </Container>

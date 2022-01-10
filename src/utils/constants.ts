@@ -33,6 +33,7 @@ export interface CurrentCardVM {
   sunset: number;
   temperature: number;
   feels_like: number;
+  wind_speed: number;
   weather: {
     main: string;
     description: string;
@@ -77,3 +78,5 @@ export const GetWEATHER = (weather: string) => {
 
   return WEATHER.ATMOSPHERE;
 };
+
+export const DAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];

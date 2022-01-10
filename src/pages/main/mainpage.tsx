@@ -4,6 +4,7 @@ import styled from "styled-components";
 import {
   COLORS,
   CurrentCardVM,
+  DAY,
   GetWEATHER,
   KelvinToCelsius,
   KelvinToFahrenheit,
@@ -109,17 +110,10 @@ function MainPage() {
     limit: "0",
     remaining: "0",
   });
-  const [dailySeq, setDailySeq] = useState<string[]>([
-    "MON",
-    "TUE",
-    "WED",
-    "THU",
-    "FRI",
-    "SAT",
-  ]);
+  const [dailySeq, setDailySeq] = useState<string[]>(DAY.splice(1));
   const [loading, setLoading] = useState<boolean>(true);
   const [status, setStatus] = useState<number>(400);
-  
+
   useEffect(() => {
     const GetCurrentWeather = async () => {
       await fetch(`http://localhost:3000`, {
@@ -142,12 +136,13 @@ function MainPage() {
               new Date().getHours() >
                 new Date((data ? data.sunrise : 0) * 1000).getHours()
           );
+          console.log(isDay)
         })
         .catch((err) => console.log(err));
       setLoading(false);
     };
     const DailySequence = () => {
-      let temp = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      let temp = DAY;
       const today = temp[new Date().getDay()];
       while (true) {
         let current = temp.shift();
@@ -167,11 +162,7 @@ function MainPage() {
 
   if (loading) return <Loading />;
 
-  if (status !== 200)
-    return (
-      <ServerError
-      />
-    );
+  if (status !== 200) return <ServerError />;
 
   return (
     data && (
@@ -187,6 +178,8 @@ function MainPage() {
             toCelsius={toCelsius}
             setToCelsius={setToCelsius}
             Temperature={data.temperature}
+            FeelsLike={data.feels_like}
+            WindSpeed={data.wind_speed}
             Description={data.weather.description}
             Location={{
               City: data.city,
@@ -281,7 +274,10 @@ const ServerErrorContainer = styled.div`
 const ServerError = () => {
   return (
     <ServerErrorContainer>
-      <div>You are unable to access <span>WeatherNow</span> Servers at the moment, try again later or refresh the page.</div>
+      <div>
+        You are unable to access <span>WeatherNow</span> Servers at the moment,
+        try again later or refresh the page.
+      </div>
     </ServerErrorContainer>
   );
 };

@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Logo" src="https://github.com/Heyeso/WeatherNow/blob/dev/public/assets/logo192.png?raw=true" width="100" />
+  
 </div>
 <h2 align="center">
  Weather Now

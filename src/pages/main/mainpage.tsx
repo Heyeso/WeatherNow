@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import {
   COLORS,
@@ -9,7 +8,6 @@ import {
   KelvinToCelsius,
   KelvinToFahrenheit,
   RateLimit,
-  SearchCardVM,
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
@@ -29,11 +27,12 @@ import {
   ThunderNightIcon,
 } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
-import CurrentCard from "./currentcard";
+import CurrentCard from "./components/currentcard";
 import BGImageDay from "./../../assets/day.png";
 import BGImageNight from "./../../assets/night.png";
 import { Loading } from "../../App";
-import { Link } from "react-router-dom";
+
+const Search = React.lazy(() => import("./components/searchpopup"));
 
 const RateLimitContainer = styled.div`
   opacity: 0.7;
@@ -82,16 +81,44 @@ const BGcolorContainer = styled.div<BGProps>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 714px) {
+    padding: 20px 10px 0;
+  }
 `;
 
 const DailyCardContainer = styled.section`
   display: flex;
   width: 100%;
+  box-sizing: border-box;
   max-width: fit-content;
   margin: 20px 0 0;
   padding: 30px 20px 40px;
   overflow-x: auto;
   flex-wrap: nowrap;
+  @media screen and (max-width: 714px) {
+    flex-direction: column;
+    max-width: none;
+    padding: 20px 5px;
+  }
+  /* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #353535 #ffffff;
+
+  /* Chrome, Edge, and Safari */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #3d3d3d;
+    border-radius: 500px;
+    border: 3px none #ffffff;
+  }
 `;
 
 interface BGProps {
@@ -100,12 +127,9 @@ interface BGProps {
 }
 
 function MainPage() {
-  const { search } = useParams();
-
   const [data, setData] = useState<CurrentCardVM | null>(null);
   const [toCelsius, setToCelsius] = useState<boolean>(true);
   const [isDay, setIsDay] = useState<boolean>(true);
-  const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
@@ -158,12 +182,8 @@ function MainPage() {
         } else if (current) temp.push(current);
       }
     };
-    if (search) {
-      console.log(search);
-    } else {
-      GetCurrentWeather();
-      DailySequence();
-    }
+    GetCurrentWeather();
+    DailySequence();
   }, []);
 
   if (loading) return <Loading />;
@@ -193,7 +213,7 @@ function MainPage() {
             }}
             Weather={data.weather.main}
           />
-          <DailyCardContainer>
+          <DailyCardContainer id="daily-contain">
             {data.daily.map((element, index) => (
               <DailyCard
                 key={index}

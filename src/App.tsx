@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import styled from "styled-components";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { COLORS } from "./utils/constants";
 
 const MainPage = React.lazy(() => import("./pages/main/mainpage"));
@@ -12,8 +12,7 @@ function App() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/search/:search" element={<MainPage />} />
-          <Route path="/*" element={<PageNotFound />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Suspense>
     </div>

@@ -33,11 +33,13 @@ export interface CurrentCardVM {
   sunset: number;
   temperature: number;
   feels_like: number;
+  wind_speed: number;
   weather: {
     main: string;
     description: string;
   };
   daily: DailyCardVM[];
+  error?: string;
 }
 
 export interface SearchCardVM {
@@ -76,3 +78,6 @@ export const GetWEATHER = (weather: string) => {
 
   return WEATHER.ATMOSPHERE;
 };
+
+export const DAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+export const MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import {
   COLORS,
   CurrentCardVM,
+  DAY,
   GetWEATHER,
   KelvinToCelsius,
   KelvinToFahrenheit,
   RateLimit,
-  SearchCardVM,
   WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
@@ -28,9 +27,12 @@ import {
   ThunderNightIcon,
 } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
-import CurrentCard from "./currentcard";
-import BGImageDay from "./../../assets/day.png"
-import BGImageNight from "./../../assets/night.png"
+import CurrentCard from "./components/currentcard";
+import BGImageDay from "./../../assets/day.png";
+import BGImageNight from "./../../assets/night.png";
+import { Loading } from "../../App";
+
+const Search = React.lazy(() => import("./components/searchpopup"));
 
 const RateLimitContainer = styled.div`
   opacity: 0.7;
@@ -58,7 +60,7 @@ const MainPageContainer = styled.section<BGProps>`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
-  background-image: url(${(props) => props.isDay? BGImageDay: BGImageNight});
+  background-image: url(${(props) => props.isDay ? BGImageDay : BGImageNight});
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center;
@@ -79,16 +81,44 @@ const BGcolorContainer = styled.div<BGProps>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 714px) {
+    padding: 20px 10px 0;
+  }
 `;
 
 const DailyCardContainer = styled.section`
   display: flex;
   width: 100%;
+  box-sizing: border-box;
   max-width: fit-content;
   margin: 20px 0 0;
   padding: 30px 20px 40px;
   overflow-x: auto;
   flex-wrap: nowrap;
+  @media screen and (max-width: 714px) {
+    flex-direction: column;
+    max-width: none;
+    padding: 20px 5px;
+  }
+  /* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #353535 #ffffff;
+
+  /* Chrome, Edge, and Safari */
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #3d3d3d;
+    border-radius: 500px;
+    border: 3px none #ffffff;
+  }
 `;
 
 interface BGProps {
@@ -97,12 +127,9 @@ interface BGProps {
 }
 
 function MainPage() {
-  const { search } = useParams();
-
   const [data, setData] = useState<CurrentCardVM | null>(null);
   const [toCelsius, setToCelsius] = useState<boolean>(true);
   const [isDay, setIsDay] = useState<boolean>(true);
-  const [searchData, setSearchData] = useState<SearchCardVM | null>(null);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
@@ -115,6 +142,8 @@ function MainPage() {
     "FRI",
     "SAT",
   ]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [status, setStatus] = useState<number>(400);
 
   useEffect(() => {
     const GetCurrentWeather = async () => {
@@ -127,6 +156,7 @@ function MainPage() {
             remaining: response.headers.get("X-RateLimit-Remaining"),
           };
           setRateLimit(rateLimits);
+          setStatus(response.status);
           return response.json();
         })
         .then((weatherData) => {
@@ -139,9 +169,10 @@ function MainPage() {
           );
         })
         .catch((err) => console.log(err));
+      setLoading(false);
     };
     const DailySequence = () => {
-      let temp = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      let temp = DAY;
       const today = temp[new Date().getDay()];
       while (true) {
         let current = temp.shift();
@@ -151,20 +182,21 @@ function MainPage() {
         } else if (current) temp.push(current);
       }
     };
-    if (search) {
-      console.log(search);
-    } else {
-      GetCurrentWeather();
-      DailySequence();
-    }
+    GetCurrentWeather();
+    DailySequence();
   }, []);
 
+  if (loading) return <Loading />;
+
+  if (status !== 200) return <ServerError />;
+
   return (
-    <MainPageContainer isDay={isDay}>
-      {data && (
+    data && (
+      <MainPageContainer isDay={isDay}>
         <BGcolorContainer
           backGroundColor={TemperatureColorGenerator(
-            KelvinToCelsius(data.temperature), 0.7
+            KelvinToCelsius(data.temperature),
+            0.7
           )}
         >
           <CurrentCard
@@ -172,6 +204,8 @@ function MainPage() {
             toCelsius={toCelsius}
             setToCelsius={setToCelsius}
             Temperature={data.temperature}
+            FeelsLike={data.feels_like}
+            WindSpeed={data.wind_speed}
             Description={data.weather.description}
             Location={{
               City: data.city,
@@ -179,7 +213,7 @@ function MainPage() {
             }}
             Weather={data.weather.main}
           />
-          <DailyCardContainer>
+          <DailyCardContainer id="daily-contain">
             {data.daily.map((element, index) => (
               <DailyCard
                 key={index}
@@ -208,12 +242,12 @@ function MainPage() {
             ))}
           </DailyCardContainer>
         </BGcolorContainer>
-      )}
-      <RateLimitContainer>
-        {rateLimit.remaining}/{rateLimit.limit}
-        <span>REQUESTS LEFT</span>
-      </RateLimitContainer>
-    </MainPageContainer>
+        <RateLimitContainer>
+          {rateLimit.remaining}/{rateLimit.limit}
+          <span>REQUESTS LEFT</span>
+        </RateLimitContainer>
+      </MainPageContainer>
+    )
   );
 }
 export default MainPage;
@@ -244,4 +278,32 @@ export const getIcon = (weather_condition: WEATHER, isDay_bool: boolean) => {
     default:
       return <SunnyIcon />;
   }
+};
+
+const ServerErrorContainer = styled.div`
+  div {
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 18px;
+    color: ${COLORS.BLACK};
+    font-family: "Montserrat light";
+    text-align: center;
+    transform: translate(-50%, -50%);
+    span {
+      color: rgb(56, 192, 255);
+    }
+  }
+`;
+
+const ServerError = () => {
+  return (
+    <ServerErrorContainer>
+      <div>
+        You are unable to access <span>WeatherNow</span> Servers at the moment,
+        try again later or refresh the page.
+      </div>
+    </ServerErrorContainer>
+  );
 };

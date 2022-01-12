@@ -4,7 +4,6 @@ import {
   COLORS,
   CurrentCardVM,
   DAY,
-  GetWEATHER,
   KelvinToCelsius,
   KelvinToFahrenheit,
   RateLimit,
@@ -81,7 +80,7 @@ const BGcolorContainer = styled.div<BGProps>`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     padding: 20px 10px 0;
   }
 `;
@@ -95,7 +94,7 @@ const DailyCardContainer = styled.section`
   padding: 30px 20px 40px;
   overflow-x: auto;
   flex-wrap: nowrap;
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     flex-direction: column;
     max-width: none;
     padding: 20px 5px;
@@ -146,29 +145,35 @@ function MainPage() {
   const [status, setStatus] = useState<number>(400);
 
   useEffect(() => {
+
     const GetCurrentWeather = async () => {
-      await fetch(`http://localhost:3000`, {
-        method: `GET`,
-      })
-        .then((response) => {
-          let rateLimits = {
-            limit: response.headers.get("X-RateLimit-Limit"),
-            remaining: response.headers.get("X-RateLimit-Remaining"),
-          };
-          setRateLimit(rateLimits);
-          setStatus(response.status);
-          return response.json();
-        })
-        .then((weatherData) => {
-          setData(weatherData);
-          setIsDay(
-            new Date().getHours() <
+       navigator.geolocation.getCurrentPosition(async (location) => {
+       await fetch(
+          `${process.env.REACT_APP_API_URL}/?lon=${location.coords.longitude}&lat=${location.coords.latitude}`,
+          {
+            method: `GET`,
+          }
+        )
+          .then((response) => {
+            let rateLimits = {
+              limit: response.headers.get("X-RateLimit-Limit"),
+              remaining: response.headers.get("X-RateLimit-Remaining"),
+            };
+            setRateLimit(rateLimits);
+            setStatus(response.status);
+            return response.json();
+          })
+          .then((weatherData) => {
+            setData(weatherData);
+            setIsDay(
+              new Date().getHours() <
               new Date((data ? data.sunset : 0) * 1000).getHours() &&
               new Date().getHours() >
-                new Date((data ? data.sunrise : 0) * 1000).getHours()
-          );
-        })
-        .catch((err) => console.log(err));
+              new Date((data ? data.sunrise : 0) * 1000).getHours()
+            );
+          })
+          .catch((err) => console.log(err))}
+      );
       setLoading(false);
     };
     const DailySequence = () => {
@@ -218,6 +223,7 @@ function MainPage() {
               <DailyCard
                 key={index}
                 Date={dailySeq[index]}
+                WindSpeed={element.wind_speed}
                 Temperature={
                   toCelsius
                     ? {
@@ -237,7 +243,7 @@ function MainPage() {
                         ),
                       }
                 }
-                Weather={GetWEATHER(element.weather.main)}
+                Weather={element.weather}
               />
             ))}
           </DailyCardContainer>

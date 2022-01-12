@@ -14,7 +14,6 @@ export enum WEATHER {
   THUNDER = "Thunderstorm",
   ATMOSPHERE = "Atmosphere",
 }
-
 export interface DailyCardVM {
   temperature: {
     max: number;
@@ -24,6 +23,7 @@ export interface DailyCardVM {
     main: string;
     description: string;
   };
+  wind_speed: number;
 }
 
 export interface CurrentCardVM {
@@ -80,4 +80,17 @@ export const GetWEATHER = (weather: string) => {
 };
 
 export const DAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-export const MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+export const MONTH = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];

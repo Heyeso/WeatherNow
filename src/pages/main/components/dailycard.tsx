@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { COLORS, WEATHER } from "../../../utils/constants";
+import { COLORS, GetWEATHER, WEATHER } from "../../../utils/constants";
 import {
   SunnyIcon,
   CloudyIcon,
@@ -35,12 +35,12 @@ const DailyCardContainer = styled.section`
   perspective: 1000;
   transform: translate3d(0, 0, 0);
   transform: translateZ(0);
-  @media screen and (min-width: 714px) {
+  @media screen and (min-width: 769px) {
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     background: rgba(196, 196, 196, 0.15);
   }
 
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     flex-direction: row;
     max-width: none;
     margin: 5px 0;
@@ -54,6 +54,9 @@ const DateContain = styled.p`
   font-size: 16px;
   text-align: center;
   margin: 0;
+  @media screen and (max-width: 769px) {
+    margin: 0 5px 0 0;
+  }
 `;
 const WeatherContain = styled.div`
   margin: 15px 0;
@@ -61,11 +64,29 @@ const WeatherContain = styled.div`
     width: 50px;
     height: 50px;
   }
-  @media screen and (max-width: 714px) {
+  p {
+    display: none;
+  }
+  @media screen and (max-width: 769px) {
     margin: 0 30px 0 auto;
+    display: flex;
+    align-items: center;
     svg {
       width: 30px;
       height: 30px;
+    }
+    p {
+      display: block;
+      margin: 0 0 0 10px;
+      font-family: "Montserrat semi-bold";
+      font-size: 12px;
+      text-transform: capitalize;
+    }
+  }
+  @media screen and (max-width: 400px) {
+    margin: 0 10px 0 auto;
+    p {
+      margin: 0 0 0 5px;
     }
   }
 `;
@@ -83,14 +104,33 @@ const TemperatureContain = styled.div`
     margin: 0;
     padding: 0;
   }
-  .min {
+  .min,
+  .wind-speed {
     padding-top: 5px;
     font-size: 14px;
+  }
+  .min {
     opacity: 0.7;
   }
-  @media screen and (max-width: 714px) {
-    .min {
+  .wind-speed {
+    font-family: "Montserrat medium";
+    font-size: 12px;
+    span {
+      display: none;
+      margin-left: 2px;
+      font-size: 10px;
+    }
+  }
+  @media screen and (max-width: 769px) {
+    .min,
+    .wind-speed {
       padding: 0 0 0 7px;
+    }
+    .wind-speed {
+      margin-left: 10px;
+      span {
+        display: inline-block;
+      }
     }
     justify-content: center;
     align-items: center;
@@ -101,13 +141,19 @@ const TemperatureContain = styled.div`
 `;
 interface Props {
   Date: string;
+  WindSpeed: number;
   Temperature: {
     max: number;
     min: number;
   };
-  Weather: WEATHER;
+  Weather: {
+    main: string;
+    description: string;
+  };
 }
-function DailyCard({ Date, Temperature, Weather }: Props) {
+// GetWEATHER(element.weather.main)
+function DailyCard({ Date, Temperature, Weather, WindSpeed }: Props) {
+
   const getIcon = (weather_condition: WEATHER) => {
     switch (weather_condition) {
       case WEATHER.SUNNY:
@@ -131,7 +177,10 @@ function DailyCard({ Date, Temperature, Weather }: Props) {
   return (
     <DailyCardContainer>
       <DateContain>{Date}</DateContain>
-      <WeatherContain>{getIcon(Weather)}</WeatherContain>
+      <WeatherContain>
+        <div>{getIcon(GetWEATHER(Weather.main))}</div>
+        <p>{Weather.description}</p>
+      </WeatherContain>
       <TemperatureContain>
         <p className="max">
           {Temperature.max}
@@ -140,6 +189,10 @@ function DailyCard({ Date, Temperature, Weather }: Props) {
         <p className="min">
           {Temperature.min}
           <span>°</span>
+        </p>
+        <p className="wind-speed">
+          {WindSpeed}
+          <span>mph</span>
         </p>
       </TemperatureContain>
     </DailyCardContainer>

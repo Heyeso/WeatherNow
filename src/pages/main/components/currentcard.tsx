@@ -45,7 +45,7 @@ const CurrentCardContainer = styled.section`
     margin: auto 0 0;
   }
 
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     max-height: 350px;
     padding: 15px 7px;
   }
@@ -67,7 +67,7 @@ const TemperatureContain = styled.div`
     font-size: 36px;
     line-height: normal;
   }
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     margin: 0 20px;
     font-size: 84px;
     font-family: "Montserrat regular";
@@ -84,7 +84,7 @@ const WeatherContain = styled.p`
     width: 100px;
     height: 100px;
   }
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     margin: auto 20px;
     margin-left: auto;
     svg {
@@ -108,7 +108,7 @@ const LocationContain = styled.p`
     width: 20px;
     height: 20px;
   }
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     margin: 5px 0 0 10px;
   }
 `;
@@ -144,6 +144,9 @@ const DescriptionContain = styled.div`
       margin-right: 10px;
       font-family: "Montserrat medium";
     }
+  }
+  @media screen and (max-width: 769px) {
+    margin: 10px auto auto 20px;
   }
 `;
 interface CurrentCardProps {
@@ -223,7 +226,7 @@ const CurrentTimeContainer = styled.div`
     font-family: "Montserrat medium";
     font-size: 16px;
   }
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     font-size: 18px;
     span {
       font-size: 14px;
@@ -237,7 +240,7 @@ const CurrentDayContainer = styled.div`
   font-family: "Montserrat medium";
   font-size: 14px;
   text-align: center;
-  @media screen and (max-width: 714px) {
+  @media screen and (max-width: 769px) {
     font-size: 12px;
   }
 `;

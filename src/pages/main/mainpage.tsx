@@ -69,7 +69,7 @@ const MainPageContainer = styled.section<BGProps>`
 const BGcolorContainer = styled.div<BGProps>`
   width: 100%;
   height: 100%;
-  padding: 0 10px;
+  padding: 10px;
   box-sizing: border-box;
   position: relative;
   display: block;
@@ -167,9 +167,9 @@ function MainPage() {
             setData(weatherData);
             setIsDay(
               new Date().getHours() <
-                new Date((data ? data.sunset : 0) * 1000).getHours() &&
+                new Date((weatherData ? weatherData.sunset : 0) * 1000).getHours() &&
                 new Date().getHours() >
-                  new Date((data ? data.sunrise : 0) * 1000).getHours()
+                  new Date((weatherData ? weatherData.sunrise : 0) * 1000).getHours()
             );
           })
           .catch((err) => console.log(err));
@@ -336,7 +336,7 @@ const GeolocationErrorContainer = styled.div`
     @media screen and (max-width: 769px) {
       font-size: 16px;
     }
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 428px) {
       font-family: "Montserrat regular";
       font-size: 14px;
     }

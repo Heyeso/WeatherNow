@@ -143,12 +143,12 @@ function MainPage() {
   ]);
   const [loading, setLoading] = useState<boolean>(true);
   const [status, setStatus] = useState<number>(400);
+  const [isGeoPermission, setIsGeoPermission] = useState<boolean>(true);
 
   useEffect(() => {
-
     const GetCurrentWeather = async () => {
-       navigator.geolocation.getCurrentPosition(async (location) => {
-       await fetch(
+      navigator.geolocation.getCurrentPosition(async (location) => {
+        await fetch(
           `${process.env.REACT_APP_API_URL}/?lon=${location.coords.longitude}&lat=${location.coords.latitude}`,
           {
             method: `GET`,
@@ -167,14 +167,17 @@ function MainPage() {
             setData(weatherData);
             setIsDay(
               new Date().getHours() <
-              new Date((data ? data.sunset : 0) * 1000).getHours() &&
-              new Date().getHours() >
-              new Date((data ? data.sunrise : 0) * 1000).getHours()
+                new Date((data ? data.sunset : 0) * 1000).getHours() &&
+                new Date().getHours() >
+                  new Date((data ? data.sunrise : 0) * 1000).getHours()
             );
           })
-          .catch((err) => console.log(err))}
-      );
-      setLoading(false);
+          .catch((err) => console.log(err));
+        setLoading(false);
+      }, (error) => {
+        setLoading(false);
+        setIsGeoPermission(false);
+      })
     };
     const DailySequence = () => {
       let temp = DAY;
@@ -192,6 +195,8 @@ function MainPage() {
   }, []);
 
   if (loading) return <Loading />;
+
+  if (!isGeoPermission) return <GeolocationError />;
 
   if (status !== 200) return <ServerError />;
 
@@ -307,9 +312,44 @@ const ServerError = () => {
   return (
     <ServerErrorContainer>
       <div>
-        You are unable to access <span>WeatherNow</span> Servers at the moment,
+        You are unable to access <span>WeatherNow</span> Server at the moment,
         try again later or refresh the page.
       </div>
     </ServerErrorContainer>
+  );
+};
+
+const GeolocationErrorContainer = styled.div`
+  div {
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 18px;
+    color: ${COLORS.BLACK};
+    font-family: "Montserrat light";
+    text-align: center;
+    transform: translate(-50%, -50%);
+    span {
+      color: rgb(56, 192, 255);
+    }
+    @media screen and (max-width: 769px) {
+      font-size: 16px;
+    }
+    @media screen and (max-width: 400px) {
+      font-family: "Montserrat regular";
+      font-size: 14px;
+    }
+  }
+`;
+
+const GeolocationError = () => {
+  return (
+    <GeolocationErrorContainer>
+      <div>
+      <span>WeatherNow</span> is denied location permission :( . 
+      Allow location permission to use application.
+      </div>
+    </GeolocationErrorContainer>
   );
 };

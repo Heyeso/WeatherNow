@@ -34,7 +34,7 @@ import { Loading } from "../../App";
 const Search = React.lazy(() => import("./components/searchpopup"));
 
 const RateLimitContainer = styled.div`
-  opacity: 0.7;
+  opacity: 0.8;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -46,8 +46,15 @@ const RateLimitContainer = styled.div`
   width: fit-content;
   height: fit-content;
   span {
-    padding-top: 10px;
+    padding-top: 5px;
     font-size: 10px;
+  }
+  @media screen and (max-width: 428px) {
+    font-size: 18px;
+    span {
+      padding-top: 3px;
+      font-size: 8px;
+    }
   }
 `;
 
@@ -147,37 +154,44 @@ function MainPage() {
 
   useEffect(() => {
     const GetCurrentWeather = async () => {
-      navigator.geolocation.getCurrentPosition(async (location) => {
-        await fetch(
-          `${process.env.REACT_APP_API_URL}/?lon=${location.coords.longitude}&lat=${location.coords.latitude}`,
-          {
-            method: `GET`,
-          }
-        )
-          .then((response) => {
-            let rateLimits = {
-              limit: response.headers.get("X-RateLimit-Limit"),
-              remaining: response.headers.get("X-RateLimit-Remaining"),
-            };
-            setRateLimit(rateLimits);
-            setStatus(response.status);
-            return response.json();
-          })
-          .then((weatherData) => {
-            setData(weatherData);
-            setIsDay(
-              new Date().getHours() <
-                new Date((weatherData ? weatherData.sunset : 0) * 1000).getHours() &&
-                new Date().getHours() >
-                  new Date((weatherData ? weatherData.sunrise : 0) * 1000).getHours()
-            );
-          })
-          .catch((err) => console.log(err));
-        setLoading(false);
-      }, (error) => {
-        setLoading(false);
-        setIsGeoPermission(false);
-      })
+      navigator.geolocation.getCurrentPosition(
+        async (location) => {
+          await fetch(
+            `${process.env.REACT_APP_API_URL}/?lon=${location.coords.longitude}&lat=${location.coords.latitude}`,
+            {
+              method: `GET`,
+            }
+          )
+            .then((response) => {
+              let rateLimits = {
+                limit: response.headers.get("X-RateLimit-Limit"),
+                remaining: response.headers.get("X-RateLimit-Remaining"),
+              };
+              setRateLimit(rateLimits);
+              setStatus(response.status);
+              return response.json();
+            })
+            .then((weatherData) => {
+              setData(weatherData);
+              setIsDay(
+                new Date().getHours() <
+                  new Date(
+                    (weatherData ? weatherData.sunset : 0) * 1000
+                  ).getHours() &&
+                  new Date().getHours() >
+                    new Date(
+                      (weatherData ? weatherData.sunrise : 0) * 1000
+                    ).getHours()
+              );
+            })
+            .catch((err) => console.log(err));
+          setLoading(false);
+        },
+        (error) => {
+          setLoading(false);
+          setIsGeoPermission(false);
+        }
+      );
     };
     const DailySequence = () => {
       let temp = DAY;
@@ -227,7 +241,7 @@ function MainPage() {
             {data.daily.map((element, index) => (
               <DailyCard
                 key={index}
-                Date={dailySeq[index]}
+                DailyDate={{ day: dailySeq[index], date: index }}
                 WindSpeed={element.wind_speed}
                 Temperature={
                   toCelsius
@@ -347,8 +361,8 @@ const GeolocationError = () => {
   return (
     <GeolocationErrorContainer>
       <div>
-      <span>WeatherNow</span> is denied location permission :( . 
-      Allow location permission to use application.
+        <span>WeatherNow</span> is denied location permission :( . Allow
+        location permission to use application.
       </div>
     </GeolocationErrorContainer>
   );

@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { COLORS, GetWEATHER, WEATHER } from "../../../utils/constants";
+import {
+  COLORS,
+  DAY,
+  GetWEATHER,
+  MONTH,
+  WEATHER,
+} from "../../../utils/constants";
 import {
   SunnyIcon,
   CloudyIcon,
@@ -9,7 +15,9 @@ import {
   SnowIcon,
   ThunderIcon,
   AtmosphereIcon,
+  WindSpeedIcon,
 } from "../../../assets/weather.icon";
+import { Popover } from "antd";
 
 const DailyCardContainer = styled.section`
   cursor: pointer;
@@ -39,10 +47,8 @@ const DailyCardContainer = styled.section`
   :hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
-  @media (hover: none) {
-    :hover {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
+  &.ant-popover-open {
+    background-color: rgba(255, 255, 255, 0.3);
   }
   @media screen and (min-width: 769px) {
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -56,6 +62,14 @@ const DailyCardContainer = styled.section`
     padding: 5px 15px;
     :hover {
       background-color: rgba(255, 255, 255, 0.5);
+    }
+    &.ant-popover-open {
+      background-color: rgba(255, 255, 255, 0.35);
+    }
+  }
+  @media (hover: none) {
+    :hover {
+      background-color: rgba(255, 255, 255, 0.15);
     }
   }
 `;
@@ -91,10 +105,13 @@ const WeatherContain = styled.div`
       height: 30px;
     }
     p {
+      width: 100%;
+      width: 130px;
       display: block;
       margin: 0 0 0 10px;
       font-family: "Montserrat semi-bold";
       font-size: 12px;
+      text-align: right;
       text-transform: capitalize;
     }
   }
@@ -120,38 +137,14 @@ const TemperatureContain = styled.div`
     margin: 0;
     padding: 0;
   }
-  .min,
-  .wind-speed {
+  .min {
     padding-top: 5px;
     font-size: 14px;
-  }
-  .min {
     opacity: 0.7;
   }
-  .wind-speed {
-    font-family: "Montserrat medium";
-    font-size: 12px;
-    span {
-      display: none;
-      margin-left: 2px;
-      font-size: 10px;
-    }
-  }
-  @media screen and (min-width: 769px) {
-    .wind-speed {
-      display: none;
-    }
-  }
   @media screen and (max-width: 769px) {
-    .min,
-    .wind-speed {
+    .min {
       padding: 0 0 0 7px;
-    }
-    .wind-speed {
-      margin-left: 10px;
-      span {
-        display: inline-block;
-      }
     }
     justify-content: center;
     align-items: center;
@@ -167,13 +160,33 @@ const TemperatureContain = styled.div`
       padding: 0 0 0 7px;
       font-size: 12px;
     }
-    .wind-speed {
-      display: none;
-    }
   }
 `;
+const getIcon = (weather_condition: WEATHER) => {
+  switch (weather_condition) {
+    case WEATHER.SUNNY:
+      return <SunnyIcon />;
+    case WEATHER.CLOUDY:
+      return <CloudyIcon />;
+    case WEATHER.RAIN:
+      return <RainIcon />;
+    case WEATHER.RAIN_SUNNY:
+      return <RainSunnyIcon />;
+    case WEATHER.SNOW:
+      return <SnowIcon />;
+    case WEATHER.THUNDER:
+      return <ThunderIcon />;
+    case WEATHER.ATMOSPHERE:
+      return <AtmosphereIcon />;
+    default:
+      return <SunnyIcon />;
+  }
+};
 interface Props {
-  Date: string;
+  DailyDate: {
+    day: string;
+    date: number;
+  };
   WindSpeed: number;
   Temperature: {
     max: number;
@@ -185,32 +198,21 @@ interface Props {
   };
 }
 // GetWEATHER(element.weather.main)
-function DailyCard({ Date, Temperature, Weather, WindSpeed }: Props) {
-  const [popup, setPopup] = useState<boolean>(false);
-  const getIcon = (weather_condition: WEATHER) => {
-    switch (weather_condition) {
-      case WEATHER.SUNNY:
-        return <SunnyIcon />;
-      case WEATHER.CLOUDY:
-        return <CloudyIcon />;
-      case WEATHER.RAIN:
-        return <RainIcon />;
-      case WEATHER.RAIN_SUNNY:
-        return <RainSunnyIcon />;
-      case WEATHER.SNOW:
-        return <SnowIcon />;
-      case WEATHER.THUNDER:
-        return <ThunderIcon />;
-      case WEATHER.ATMOSPHERE:
-        return <AtmosphereIcon />;
-      default:
-        return <SunnyIcon />;
-    }
-  };
+function DailyCard({ DailyDate, Temperature, Weather, WindSpeed }: Props) {
   return (
-    <>
-      <DailyCardContainer onClick={() => setPopup(true)}>
-        <DateContain>{Date}</DateContain>
+    <Popover
+      content={
+        <DailyPopup
+          DailyDate={DailyDate}
+          Temperature={Temperature}
+          Weather={Weather}
+          WindSpeed={WindSpeed}
+        />
+      }
+      trigger="click"
+    >
+      <DailyCardContainer>
+        <DateContain>{DailyDate.day}</DateContain>
         <WeatherContain>
           <div>{getIcon(GetWEATHER(Weather.main))}</div>
           <p>{Weather.description}</p>
@@ -224,83 +226,104 @@ function DailyCard({ Date, Temperature, Weather, WindSpeed }: Props) {
             {Temperature.min}
             <span>°</span>
           </p>
-          <p className="wind-speed">
-            {WindSpeed}
-            <span>mph</span>
-          </p>
         </TemperatureContain>
       </DailyCardContainer>
-    </>
+    </Popover>
   );
 }
 
 export default DailyCard;
 
-const DailyPopupContainer = styled.div`
-  box-sizing: border-box;
+const DailyPopupContainer = styled.section`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #5c5c5c78;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-
-  /* imporve performance of blur filter */
-  -webkit-backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  -webkit-transform: translate3d(0, 0, 0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000;
-  transform: translate3d(0, 0, 0);
-  transform: translateZ(0);
-  .container {
-    box-sizing: border-box;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    max-width: 500px;
-    height: 100%;
-    max-height: 500px;
-    transform: translate(-50%, -50%);
-    z-index: 102;
-    background-color: ${COLORS.TEXT};
-    border-radius: 10px;
-    @media screen and (max-width: 500px) {
-      left: 0px;
-      right: 10px;
-      transform: translate(0, -50%);
+  flex-direction: column;
+  font-family: "Montserrat medium";
+  font-size: 16px;
+  p {
+    margin: 0;
+  }
+  .date {
+    font-family: "Montserrat semi-bold";
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .temp {
+    display: flex;
+  }
+  .min,
+  .max {
+    display: flex;
+    span {
+      font-size: 12px;
+      margin-right: 5px;
+      align-self: center;
+      .deg {
+        font-size: 14px;
+        margin: 0;
+        align-self: flex-start;
+      }
     }
   }
-  .close {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .desc {
+    display: flex;
+    flex-direction: column;
+    text-transform: capitalize;
+    font-size: 14px;
+    margin: 10px 0;
+    svg {
+      height: 70px;
+      width: 70px;
+      margin-bottom: 10px;
+    }
+  }
+  .wind-speed {
+    display: flex;
+    align-items: center;
+    svg {
+      height: 22px;
+      width: 22px;
+      margin-right: 7px;
+      * {
+        stroke-width: 2px;
+        stroke: ${COLORS.TEXT};
+      }
+    }
+    span {
+      margin-left: 3px;
+      font-size: 12px;
+    }
   }
 `;
-interface DailyPopupProps extends Props {
-  setPopup: (value: boolean) => void;
-}
-const DailyPopup = ({
-  Date,
-  Temperature,
-  Weather,
-  WindSpeed,
-  setPopup,
-}: DailyPopupProps) => {
+const DailyPopup = ({ DailyDate, Temperature, Weather, WindSpeed }: Props) => {
+  const [date, setDate] = useState<Date>(new Date());
+  useEffect(() => {
+    let temp = new Date(date).setDate(date.getDate() + DailyDate.date + 2);
+    setDate(new Date(temp));
+  }, []);
   return (
     <DailyPopupContainer>
-      <div className="close" onClick={() => setPopup(false)}></div>
-      <div className="container"></div>
+      <div className="date">{`${DAY[date.getDay()]}, ${date.getUTCDate()} ${
+        MONTH[date.getUTCMonth()]
+      }`}</div>
+      <div className="temp">
+        <div className="max">
+          <span>Max: </span>
+          {Temperature.max}
+          <span>°</span>
+        </div>
+        <div className="min">
+          <span>Min: </span>
+          {Temperature.min}
+          <span className="deg">°</span>
+        </div>
+      </div>
+      <div className="desc">
+        {getIcon(GetWEATHER(Weather.main))}
+        {Weather.description}
+      </div>
+      <div className="wind-speed">
+        <WindSpeedIcon /> {(WindSpeed * 2.237).toFixed(2)} <span>mph</span>
+      </div>
     </DailyPopupContainer>
   );
 };

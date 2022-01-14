@@ -20,6 +20,7 @@ Created with react library, "WeatherNow" is a web application that displays the 
 - React (Typescript)
 - styled-components
 - react-router-dom
+- antd
 
 ### `API`
 

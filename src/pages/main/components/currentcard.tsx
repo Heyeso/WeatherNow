@@ -23,7 +23,7 @@ const CurrentCardContainer = styled.section`
   display: flex;
   align-items: center;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(11px);
   -webkit-backdrop-filter: blur(11px);
@@ -104,11 +104,16 @@ const LocationContain = styled.p`
   display: flex;
   align-items: center;
   .location-icon {
-    margin-right: 10px;
+    margin-right: 5px;
     width: 20px;
     height: 20px;
   }
   @media screen and (max-width: 769px) {
+    .location-icon {
+      width: 18px;
+      height: 18px;
+    }
+    font-size: 14px;
     margin: 5px 0 0 10px;
   }
 `;
@@ -119,6 +124,9 @@ const DescriptionContain = styled.div`
   text-align: left;
   margin: 10px auto auto 40px;
   font-family: "Montserrat semi-bold";
+  .desc {
+    text-transform: capitalize;
+  }
   .wind-speed {
     margin: 7px 0;
     display: flex;

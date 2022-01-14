@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 import styled from "styled-components";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { COLORS } from "./utils/constants";
+import 'antd/dist/antd.css';
 
 const MainPage = React.lazy(() => import("./pages/main/mainpage"));
 const PageNotFound = React.lazy(() => import("./pages/404page"));

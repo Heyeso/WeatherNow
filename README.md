@@ -5,7 +5,7 @@
  Weather Now
 </h2>
 
-Created with react library, "WeatherNow" is a web application that displays the weather condition, description and temperature of any city in the world with the help of `Open Weather API`.
+Get simplified information on the current weather with WeatherNow. A user friendly web application that provides information on the weather condition of a location. Created with react and with `Open Weather API`.
 
 ## Install the npm and dependencies
 

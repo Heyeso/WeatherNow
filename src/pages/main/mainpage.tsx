@@ -27,9 +27,8 @@ import {
 } from "../../assets/weather.icon";
 import DailyCard from "./components/dailycard";
 import CurrentCard from "./components/currentcard";
-import BGImageDay from "./../../assets/day.png";
-import BGImageNight from "./../../assets/night.png";
 import { Loading } from "../../App";
+import Sidebar from "./components/sidebar/sidebar";
 
 const Search = React.lazy(() => import("./components/searchpopup"));
 
@@ -66,30 +65,19 @@ const MainPageContainer = styled.section<BGProps>`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
-  background-image: url(${(props) => props.isDay ? BGImageDay : BGImageNight});
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
+  background-color: ${(props) => props.backGroundColor || "white"};
 `;
 
-const BGcolorContainer = styled.div<BGProps>`
+const CurrentMainContainer = styled.div<BGProps>`
   width: 100%;
-  height: 100%;
-  padding: 10px;
+  height: fit-content;
+  max-width: 600px;
+  padding: 20px 5px;
   box-sizing: border-box;
-  position: relative;
   display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: ${(props) => props.backGroundColor || "white"};
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  @media screen and (max-width: 769px) {
-    padding: 20px 10px 0;
-  }
+  margin: auto;
 `;
 
 const DailyCardContainer = styled.section`
@@ -134,8 +122,7 @@ interface BGProps {
 
 function MainPage() {
   const [data, setData] = useState<CurrentCardVM | null>(null);
-  const [toCelsius, setToCelsius] = useState<boolean>(true);
-  const [isDay, setIsDay] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
@@ -157,7 +144,13 @@ function MainPage() {
       navigator.geolocation.getCurrentPosition(
         async (location) => {
           await fetch(
-            `${process.env.REACT_APP_API_URL}/?lon=${location.coords.longitude}&lat=${location.coords.latitude}`,
+            `${
+              process.env.NODE_ENV !== "production"
+                ? "http://localhost:3000"
+                : process.env.REACT_APP_API_URL
+            }/?lon=${location.coords.longitude}&lat=${
+              location.coords.latitude
+            }`,
             {
               method: `GET`,
             }
@@ -173,16 +166,16 @@ function MainPage() {
             })
             .then((weatherData) => {
               setData(weatherData);
-              setIsDay(
+              const IS_DAY =
                 new Date().getHours() <
                   new Date(
                     (weatherData ? weatherData.sunset : 0) * 1000
                   ).getHours() &&
-                  new Date().getHours() >
-                    new Date(
-                      (weatherData ? weatherData.sunrise : 0) * 1000
-                    ).getHours()
-              );
+                new Date().getHours() >
+                  new Date(
+                    (weatherData ? weatherData.sunrise : 0) * 1000
+                  ).getHours();
+              setDarkMode(!IS_DAY);
             })
             .catch((err) => console.log(err));
           setLoading(false);
@@ -216,28 +209,20 @@ function MainPage() {
 
   return (
     data && (
-      <MainPageContainer isDay={isDay}>
-        <BGcolorContainer
-          backGroundColor={TemperatureColorGenerator(
-            KelvinToCelsius(data.temperature),
-            0.7
-          )}
-        >
-          <CurrentCard
-            isDay={isDay}
-            toCelsius={toCelsius}
-            setToCelsius={setToCelsius}
-            Temperature={data.temperature}
-            FeelsLike={data.feels_like}
-            WindSpeed={data.wind_speed}
-            Description={data.weather.description}
-            Location={{
-              City: data.city,
-              Country: data.country,
-            }}
-            Weather={data.weather.main}
+      <MainPageContainer
+        backGroundColor={TemperatureColorGenerator(
+          KelvinToCelsius(data.temperature),
+          0.7
+        )}
+      >
+        <CurrentMainContainer>
+          <Sidebar
+            setRateLimit={setRateLimit}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
           />
-          <DailyCardContainer id="daily-contain">
+          <CurrentCard data={data} darkMode={darkMode} />
+          {/* <DailyCardContainer id="daily-contain">
             {data.daily.map((element, index) => (
               <DailyCard
                 key={index}
@@ -265,8 +250,8 @@ function MainPage() {
                 Weather={element.weather}
               />
             ))}
-          </DailyCardContainer>
-        </BGcolorContainer>
+          </DailyCardContainer> */}
+        </CurrentMainContainer>
         <RateLimitContainer>
           {rateLimit.remaining}/{rateLimit.limit}
           <span>REQUESTS LEFT</span>
@@ -277,7 +262,10 @@ function MainPage() {
 }
 export default MainPage;
 
-export const getIcon = (weather_condition: WEATHER, isDay_bool: boolean) => {
+export const getIcon = (
+  weather_condition: WEATHER,
+  isDay_bool: boolean = true
+) => {
   switch (weather_condition) {
     case WEATHER.SUNNY:
       if (isDay_bool) return <SunnyIcon />;
@@ -312,7 +300,7 @@ const ServerErrorContainer = styled.div`
     top: 50%;
     left: 50%;
     font-size: 18px;
-    color: ${COLORS.BLACK};
+    color: ${COLORS.TEXT};
     font-family: "Montserrat light";
     text-align: center;
     transform: translate(-50%, -50%);
@@ -340,7 +328,7 @@ const GeolocationErrorContainer = styled.div`
     top: 50%;
     left: 50%;
     font-size: 18px;
-    color: ${COLORS.BLACK};
+    color: ${COLORS.TEXT};
     font-family: "Montserrat light";
     text-align: center;
     transform: translate(-50%, -50%);

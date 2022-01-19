@@ -35,7 +35,7 @@ const Container = styled.div`
     top: 50%;
     left: 50%;
     font-size: 114px;
-    color: ${COLORS.WHITE};
+    color: ${COLORS.TEXT_DARK};
     font-family: "Montserrat light";
     transform: translate(-50%, -50%);
     svg {
@@ -324,7 +324,7 @@ const Container = styled.div`
 `;
 const HomeButton = styled.div`
   cursor: pointer;
-  border: 1px solid ${COLORS.WHITE};
+  border: 1px solid ${COLORS.TEXT_DARK};
   display: inline-block;
   padding: 0.35em 1.2em;
   margin: 0 0.3em 0.3em 0;
@@ -335,7 +335,7 @@ const HomeButton = styled.div`
   font-size: 24px;
   font-family: "Montserrat medium";
   a {
-    color: ${COLORS.WHITE};
+    color: ${COLORS.TEXT_DARK};
     text-decoration: none;
   }
   :hover {

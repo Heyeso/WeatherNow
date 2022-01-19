@@ -23,7 +23,7 @@ function App() {
 export default App;
 
 const LoadingContainer = styled.div`
-  background-color: ${COLORS.WHITE};
+  background-color: ${COLORS.TEXT_DARK};
   width: 100%;
   height: 100%;
   position: relative;

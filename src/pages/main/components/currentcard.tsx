@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { LocationIcon, WindSpeedIcon } from "../../../assets/weather.icon";
 import {
   COLORS,
+  CurrentCardVM,
   DAY,
   GetWEATHER,
   KelvinToCelsius,
@@ -158,60 +159,30 @@ const DescriptionContain = styled.div`
   }
 `;
 interface CurrentCardProps {
-  Temperature: number;
-  Description: string;
-  FeelsLike: number;
-  WindSpeed: number;
-  isDay: boolean;
-  Location: {
-    City: string;
-    Country: string;
-  };
-  Weather: string;
-  setToCelsius: (value: boolean) => void;
-  toCelsius: boolean;
+  data: CurrentCardVM;
+  darkMode: boolean;
 }
 const CurrentCard = ({
-  Temperature,
-  Description,
-  Location,
-  Weather,
-  isDay,
-  WindSpeed,
-  FeelsLike,
-  toCelsius,
-  setToCelsius,
+  data,
+  darkMode
 }: CurrentCardProps) => {
   return (
     <CurrentCardContainer>
       <LocationContain>
         <LocationIcon className="location-icon" />
-        {Location.City}, {Location.Country}
+        {data.city}, {data.country}
       </LocationContain>
       <section className="temp-weather">
         <TemperatureContain>
-          {toCelsius
-            ? KelvinToCelsius(Temperature).toFixed(0)
-            : KelvinToFahrenheit(Temperature).toFixed(0)}
-          {toCelsius ? (
-            <span onClick={() => setToCelsius(false)}>°c</span>
-          ) : (
-            <span onClick={() => setToCelsius(true)}>°F</span>
-          )}
+          {KelvinToCelsius(data.temperature).toFixed(0)}
+          <span>°c</span>
         </TemperatureContain>
-        <WeatherContain>{getIcon(GetWEATHER(Weather), isDay)}</WeatherContain>
+        <WeatherContain>{getIcon(GetWEATHER(data.weather.main), !darkMode)}</WeatherContain>
       </section>
       <DescriptionContain>
-        <div className="desc">{Description}</div>
+        <div className="desc">{data.weather.description}</div>
         <div className="feels-like">
-          <span>Feels Like:</span>
-          {toCelsius
-            ? KelvinToCelsius(FeelsLike).toFixed(0)
-            : KelvinToFahrenheit(FeelsLike).toFixed(0)}
-          °
-        </div>
-        <div className="wind-speed">
-          <WindSpeedIcon /> {(WindSpeed * 2.237).toFixed(2)} <span>mph</span>
+          Feels Like {KelvinToCelsius(data.feels_like).toFixed(0)}
         </div>
       </DescriptionContain>
       <CurrentDayTime />
@@ -290,8 +261,7 @@ const CurrentDayTime = () => {
       </CurrentTimeContainer>
       <CurrentDayContainer>
         {time &&
-          `${DAY[time.getDay()]}, ${time.getUTCDate()} ${
-            MONTH[time.getUTCMonth()]
+          `${DAY[time.getDay()]}, ${time.getUTCDate()}
           }`}
       </CurrentDayContainer>
     </>

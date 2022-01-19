@@ -3,21 +3,9 @@ import styled from "styled-components";
 import {
   COLORS,
   DAY,
-  GetWEATHER,
-  MONTH,
-  WEATHER,
 } from "../../../utils/constants";
-import {
-  SunnyIcon,
-  CloudyIcon,
-  RainIcon,
-  RainSunnyIcon,
-  SnowIcon,
-  ThunderIcon,
-  AtmosphereIcon,
-  WindSpeedIcon,
-} from "../../../assets/weather.icon";
 import { Popover } from "antd";
+import { getIcon } from "../mainpage";
 
 const DailyCardContainer = styled.section`
   cursor: pointer;
@@ -162,26 +150,6 @@ const TemperatureContain = styled.div`
     }
   }
 `;
-const getIcon = (weather_condition: WEATHER) => {
-  switch (weather_condition) {
-    case WEATHER.SUNNY:
-      return <SunnyIcon />;
-    case WEATHER.CLOUDY:
-      return <CloudyIcon />;
-    case WEATHER.RAIN:
-      return <RainIcon />;
-    case WEATHER.RAIN_SUNNY:
-      return <RainSunnyIcon />;
-    case WEATHER.SNOW:
-      return <SnowIcon />;
-    case WEATHER.THUNDER:
-      return <ThunderIcon />;
-    case WEATHER.ATMOSPHERE:
-      return <AtmosphereIcon />;
-    default:
-      return <SunnyIcon />;
-  }
-};
 interface Props {
   DailyDate: {
     day: string;
@@ -197,7 +165,6 @@ interface Props {
     description: string;
   };
 }
-// GetWEATHER(element.weather.main)
 function DailyCard({ DailyDate, Temperature, Weather, WindSpeed }: Props) {
   return (
     <Popover
@@ -214,7 +181,7 @@ function DailyCard({ DailyDate, Temperature, Weather, WindSpeed }: Props) {
       <DailyCardContainer>
         <DateContain>{DailyDate.day}</DateContain>
         <WeatherContain>
-          <div>{getIcon(GetWEATHER(Weather.main))}</div>
+          <div>{getIcon(Weather.main, true, Weather.description)}</div>
           <p>{Weather.description}</p>
         </WeatherContain>
         <TemperatureContain>
@@ -302,9 +269,7 @@ const DailyPopup = ({ DailyDate, Temperature, Weather, WindSpeed }: Props) => {
   }, []);
   return (
     <DailyPopupContainer>
-      <div className="date">{`${DAY[date.getDay()]}, ${date.getUTCDate()} ${
-        MONTH[date.getUTCMonth()]
-      }`}</div>
+      <div className="date">{`${DAY[date.getDay()]}, ${date.getUTCDate()}`}</div>
       <div className="temp">
         <div className="max">
           <span>Max: </span>
@@ -318,11 +283,11 @@ const DailyPopup = ({ DailyDate, Temperature, Weather, WindSpeed }: Props) => {
         </div>
       </div>
       <div className="desc">
-        {getIcon(GetWEATHER(Weather.main))}
+        {getIcon(Weather.main, true, Weather.description)}
         {Weather.description}
       </div>
       <div className="wind-speed">
-        <WindSpeedIcon /> {(WindSpeed * 2.237).toFixed(2)} <span>mph</span>
+         {(WindSpeed * 2.237).toFixed(2)} <span>mph</span>
       </div>
     </DailyPopupContainer>
   );

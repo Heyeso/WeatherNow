@@ -9,14 +9,14 @@ const PageNotFound = React.lazy(() => import("./pages/404page"));
 
 function App() {
   return (
-    <div className="App">
+    <>
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Suspense>
-    </div>
+    </>
   );
 }
 
@@ -123,7 +123,7 @@ const LoadingContainer = styled.div`
 
 export function Loading() {
   return (
-    <LoadingContainer>
+    <LoadingContainer className="App">
       <div className="wrapper">
         <div className="circle" />
         <div className="circle" />

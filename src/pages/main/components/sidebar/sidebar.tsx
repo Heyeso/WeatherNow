@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { COLORS, RateLimit, SearchCardVM } from "../../../../utils/constants";
+import { COLORS, containerProps, RateLimit, SearchCardVM } from "../../../../utils/constants";
 import { ReactComponent as MenuIcon } from "./../../../../assets/menu.icon.svg";
 import { ReactComponent as SearchIcon } from "./../../../../assets/search.icon.svg";
 import { ReactComponent as CityIcon } from "./../../../../assets/city.icon.svg";
@@ -10,12 +10,10 @@ import Recent from "./components/recent";
 import SearchResult from "./components/searchresult";
 import $ from "jquery";
 
-interface containerProps {
-  darkMode: boolean;
-}
+
 const SidebarContainer = styled.aside<containerProps>`
   width: 100%;
-  height: 700px;
+  height: 650px;
   max-height: 55px;
   margin: 10px 0 7px;
   padding: 10px;
@@ -26,15 +24,15 @@ const SidebarContainer = styled.aside<containerProps>`
   color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   background-color: ${(props) =>
     props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
-  transition: max-height 0.4s ease-in-out;
+  transition: max-height 0.5s ease-in;
   .hide {
     display: none;
   }
   &.expand {
-    max-height: 700px;
+    max-height: 650px;
     background-color: ${(props) =>
       props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
-    transition: max-height 0.4s ease-in-out;
+    transition: max-height 0.4s ease-out;
     #menu-top,
     #menu-bottom {
       opacity: 0;

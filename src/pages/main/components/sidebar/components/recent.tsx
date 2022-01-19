@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import {
   COLORS,
-  GetWEATHER,
   KelvinToCelsius,
   SearchCardVM,
 } from "../../../../../utils/constants";
@@ -21,6 +20,9 @@ const RecentContainer = styled.section<containerProps>`
   background-color: ${(props) =>
     props.darkMode ? COLORS.CONTAINER_DARK : COLORS.CONTAINER};
   color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  h1 {
+    color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  }
   .contain {
     display: flex;
     align-items: center;
@@ -28,14 +30,10 @@ const RecentContainer = styled.section<containerProps>`
   #location-icon * {
     fill: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
-  .max {
-    border-bottom: 1.5px solid
-      ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
-  }
 `;
 
 const TemperatureContainer = styled.h1`
-  width: fit-content;
+  width: 100px;
   height: fit-content;
   margin: 0 30px 0 0;
   font-size: 62px;
@@ -52,12 +50,12 @@ const TemperatureContainer = styled.h1`
 
 const TempMinMaxContainer = styled.div`
   display: flex;
-  flex-direction: column;
   width: fit-content;
+  align-items: center;
   font-family: "Montserrat medium";
   opacity: 0.8;
   span {
-    padding: 5px 0;
+    margin: 0 3px;
   }
 `;
 const LocationContainer = styled.p`
@@ -65,7 +63,7 @@ const LocationContainer = styled.p`
   height: fit-content;
   margin: 0 0 10px;
   font-family: "Montserrat medium";
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   align-items: baseline;
   line-height: normal;
@@ -102,11 +100,11 @@ const Recent = ({ darkMode, data }: Props) => {
           <span>°</span>
         </TemperatureContainer>
         <TempMinMaxContainer>
-          <span className="max">{KelvinToCelsius(data.max).toFixed(0)}°</span>
+          <span className="max">{KelvinToCelsius(data.max).toFixed(0)}°</span>/
           <span className="min">{KelvinToCelsius(data.min).toFixed(0)}°</span>
         </TempMinMaxContainer>
         <WeatherContain>
-          {getIcon(GetWEATHER(data.weather.main), true)}
+          {getIcon(data.weather.main, true, data.weather.description)}
         </WeatherContain>
       </div>
     </RecentContainer>

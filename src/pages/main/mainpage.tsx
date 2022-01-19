@@ -2,35 +2,28 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   COLORS,
+  containerProps,
   CurrentCardVM,
   DAY,
   KelvinToCelsius,
-  KelvinToFahrenheit,
   RateLimit,
-  WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
-import {
-  AtmosphereIcon,
-  AtmosphereNightIcon,
-  CloudyIcon,
-  CloudyNightIcon,
-  NightIcon,
-  RainIcon,
-  RainNightIcon,
-  RainSunnyIcon,
-  SnowIcon,
-  SnowNightIcon,
-  SunnyIcon,
-  ThunderIcon,
-  ThunderNightIcon,
-} from "../../assets/weather.icon";
+import { ReactComponent as SunnyIcon } from "../../assets/sunny.icon.svg";
+import { ReactComponent as NightIcon } from "../../assets/moon.icon.svg";
+import { ReactComponent as RainIcon } from "../../assets/rain.icon.svg";
+import { ReactComponent as RainSunnyIcon } from "../../assets/rain.sunny.icon.svg";
+import { ReactComponent as RainNightIcon } from "../../assets/rain.moon.icon.svg";
+import { ReactComponent as CloudyIcon } from "../../assets/cloudy.icon.svg";
+import { ReactComponent as CloudySunnyIcon } from "../../assets/cloudy.sunny.icon.svg";
+import { ReactComponent as CloudyNightIcon } from "../../assets/cloudy.moon.icon.svg";
+import { ReactComponent as AtmosphereIcon } from "../../assets/atmosphere.icon.svg";
+import { ReactComponent as SnowIcon } from "../../assets/snow.icon.svg";
+import { ReactComponent as ThunderIcon } from "../../assets/thunder.icon.svg";
 import DailyCard from "./components/dailycard";
-import CurrentCard from "./components/currentcard";
+import CurrentCard from "./components/currentcard/currentcard";
 import { Loading } from "../../App";
 import Sidebar from "./components/sidebar/sidebar";
-
-const Search = React.lazy(() => import("./components/searchpopup"));
 
 const RateLimitContainer = styled.div`
   opacity: 0.8;
@@ -57,7 +50,12 @@ const RateLimitContainer = styled.div`
   }
 `;
 
-const MainPageContainer = styled.section<BGProps>`
+interface BGProps extends containerProps {
+  backGroundColor?: string;
+  isDay?: boolean;
+}
+
+const MainPageContainer = styled.main<BGProps>`
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -66,9 +64,13 @@ const MainPageContainer = styled.section<BGProps>`
   overflow-y: auto;
   overflow-x: hidden;
   background-color: ${(props) => props.backGroundColor || "white"};
+
+  ${(props) => (!props.darkMode ? ".white{fill: #56ccf2; }" : "")};
 `;
 
-const CurrentMainContainer = styled.div<BGProps>`
+const FixedContainer = styled.section``;
+
+const CurrentMainContainer = styled.div`
   width: 100%;
   height: fit-content;
   max-width: 600px;
@@ -115,14 +117,10 @@ const DailyCardContainer = styled.section`
   }
 `;
 
-interface BGProps {
-  backGroundColor?: string;
-  isDay?: boolean;
-}
-
 function MainPage() {
   const [data, setData] = useState<CurrentCardVM | null>(null);
   const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [day, setDay] = useState<boolean>(true);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
@@ -176,6 +174,7 @@ function MainPage() {
                     (weatherData ? weatherData.sunrise : 0) * 1000
                   ).getHours();
               setDarkMode(!IS_DAY);
+              setDay(IS_DAY);
             })
             .catch((err) => console.log(err));
           setLoading(false);
@@ -210,18 +209,22 @@ function MainPage() {
   return (
     data && (
       <MainPageContainer
+        darkMode={darkMode}
+        className="App"
         backGroundColor={TemperatureColorGenerator(
           KelvinToCelsius(data.temperature),
-          0.7
+          darkMode ? 0.7 : 0.4
         )}
       >
         <CurrentMainContainer>
-          <Sidebar
-            setRateLimit={setRateLimit}
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-          />
-          <CurrentCard data={data} darkMode={darkMode} />
+          <FixedContainer>
+            <Sidebar
+              setRateLimit={setRateLimit}
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+            <CurrentCard data={data} darkMode={darkMode} isDay={day} />
+          </FixedContainer>
           {/* <DailyCardContainer id="daily-contain">
             {data.daily.map((element, index) => (
               <DailyCard
@@ -261,37 +264,6 @@ function MainPage() {
   );
 }
 export default MainPage;
-
-export const getIcon = (
-  weather_condition: WEATHER,
-  isDay_bool: boolean = true
-) => {
-  switch (weather_condition) {
-    case WEATHER.SUNNY:
-      if (isDay_bool) return <SunnyIcon />;
-      else return <NightIcon />;
-    case WEATHER.CLOUDY:
-      if (isDay_bool) return <CloudyIcon />;
-      else return <CloudyNightIcon />;
-    case WEATHER.RAIN:
-      if (isDay_bool) return <RainIcon />;
-      else return <RainNightIcon />;
-    case WEATHER.RAIN_SUNNY:
-      if (isDay_bool) return <RainSunnyIcon />;
-      else return <RainNightIcon />;
-    case WEATHER.SNOW:
-      if (isDay_bool) return <SnowIcon />;
-      else return <SnowNightIcon />;
-    case WEATHER.THUNDER:
-      if (isDay_bool) return <ThunderIcon />;
-      else return <ThunderNightIcon />;
-    case WEATHER.ATMOSPHERE:
-      if (isDay_bool) return <AtmosphereIcon />;
-      else return <AtmosphereNightIcon />;
-    default:
-      return <SunnyIcon />;
-  }
-};
 
 const ServerErrorContainer = styled.div`
   div {
@@ -354,4 +326,34 @@ const GeolocationError = () => {
       </div>
     </GeolocationErrorContainer>
   );
+};
+
+export const getIcon = (
+  condition: string,
+  isDay: boolean = true,
+  description: string = ""
+) => {
+  switch (condition) {
+    case "Clear":
+      if (isDay) return <SunnyIcon />;
+      else return <NightIcon />;
+    case "Clouds":
+      if (description === "few clouds") {
+        if (isDay) return <CloudySunnyIcon />;
+        else return <CloudyNightIcon />;
+      }
+      return <CloudyIcon />;
+    case "Drizzle":
+      return <RainNightIcon />;
+    case "Rain":
+      if (description === "shower rain") return <RainIcon />;
+      if (isDay) return <RainSunnyIcon />;
+      else return <RainNightIcon />;
+    case "Snow":
+      return <SnowIcon />;
+    case "Thunderstorm":
+      return <ThunderIcon />;
+    default:
+      return <AtmosphereIcon />;
+  }
 };

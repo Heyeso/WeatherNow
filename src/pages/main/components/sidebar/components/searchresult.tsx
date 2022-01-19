@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import {
   COLORS,
-  GetWEATHER,
   KelvinToCelsius,
   SearchCardVM,
 } from "../../../../../utils/constants";
@@ -26,7 +25,7 @@ const SearchResultContainer = styled.section<containerProps>`
     display: flex;
     align-items: center;
   }
-  #location-icon * {
+  #location-icon-1 * {
     fill: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
   .max {
@@ -80,10 +79,11 @@ const LocationContainer = styled.p`
   height: fit-content;
   margin: 0 0 10px;
   font-family: "Montserrat medium";
-  font-size: 18px;
+  font-size: 16px;
   display: flex;
   align-items: baseline;
   line-height: normal;
+  text-transform: capitalize;
   svg {
     width: 15px;
     height: 15px;
@@ -109,11 +109,11 @@ const SearchResult = ({ darkMode, data }: Props) => {
     <SearchResultContainer darkMode={darkMode} className="hide">
       <LocationContainer>
         {data.city} {data.country}
-        <LocationIcon id="location-icon" />
+        <LocationIcon id="location-icon-1"/>
       </LocationContainer>
       <div className="contain">
         <WeatherContain>
-          {getIcon(GetWEATHER(data.weather.main), true)}
+          {getIcon(data.weather.main, true, data.weather.description)}
         </WeatherContain>
         <TemperatureContainer>
           {KelvinToCelsius(data.temperature).toFixed(0)}

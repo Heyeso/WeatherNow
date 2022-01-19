@@ -37,7 +37,7 @@ const colorMixer = (
   return "rgba(" + r + "," + g + "," + b + "," + opacity + ")";
 };
 
-export const TemperatureColorGenerator = (temp: number, opacity: number) => {
+export const TemperatureColorGenerator = (temp: number, opacity: number = 0.5) => {
   if (temp >= TEMP[0]) return `rgb(${TEMP_COLORS[0]}, ${opacity})`;
   if (temp <= TEMP[TEMP.length - 1])
     return `rgba(${TEMP_COLORS[TEMP.length - 1]}, ${opacity})`;

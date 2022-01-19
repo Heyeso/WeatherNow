@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { NightIcon } from "../assets/weather.icon";
+import { ReactComponent as NightIcon } from "../assets/moon.icon.svg";
 import { COLORS } from "../utils/constants";
 
 const Container = styled.div`

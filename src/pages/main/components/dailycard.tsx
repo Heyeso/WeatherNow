@@ -287,7 +287,7 @@ const DailyPopup = ({ DailyDate, Temperature, Weather, WindSpeed }: Props) => {
         {Weather.description}
       </div>
       <div className="wind-speed">
-         {(WindSpeed * 2.237).toFixed(2)} <span>mph</span>
+         {(WindSpeed ).toFixed(2)} <span>mph</span>
       </div>
     </DailyPopupContainer>
   );

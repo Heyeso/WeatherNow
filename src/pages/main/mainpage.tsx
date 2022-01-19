@@ -24,15 +24,17 @@ import DailyCard from "./components/dailycard";
 import CurrentCard from "./components/currentcard/currentcard";
 import { Loading } from "../../App";
 import Sidebar from "./components/sidebar/sidebar";
+import CurrentCardExpand from "./components/currentcard/currentcardexpand";
 
-const RateLimitContainer = styled.div`
-  opacity: 0.8;
+const RateLimitContainer = styled.div<containerProps>`
+  opacity: 0.5;
   display: flex;
+  pointer-events: none;
   flex-direction: column;
   position: fixed;
   font-size: 24px;
   font-family: "Montserrat medium";
-  color: ${COLORS.TEXT};
+  color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   top: 10px;
   left: 10px;
   width: fit-content;
@@ -63,9 +65,34 @@ const MainPageContainer = styled.main<BGProps>`
   display: block;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: ${(props) => props.backGroundColor || "white"};
 
-  ${(props) => (!props.darkMode ? ".white{fill: #56ccf2; }" : "")};
+  @media (hover: hover) {
+    /* ===== Scrollbar CSS ===== */
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: ${(props) => (props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND)} #ffffff;
+
+    /* Chrome, Edge, and Safari */
+    ::-webkit-scrollbar {
+      width: 5px;
+      padding: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: ${(props) => (props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND)};
+      border-radius: 500px;
+      border: 3px none #ffffff;
+    }
+  }
+
+  ${(props) =>
+    !props.darkMode
+      ? "  background-color: #0093e9; background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%); .white{fill: #56ccf2; }"
+      : "background-color: #007ec3;background-image: linear-gradient(160deg, #007ec3 0%, #007b6a 100%);"};
 `;
 
 const FixedContainer = styled.section``;
@@ -95,25 +122,6 @@ const DailyCardContainer = styled.section`
     flex-direction: column;
     max-width: none;
     padding: 20px 5px;
-  }
-  /* ===== Scrollbar CSS ===== */
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: #353535 #ffffff;
-
-  /* Chrome, Edge, and Safari */
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #3d3d3d;
-    border-radius: 500px;
-    border: 3px none #ffffff;
   }
 `;
 
@@ -213,7 +221,7 @@ function MainPage() {
         className="App"
         backGroundColor={TemperatureColorGenerator(
           KelvinToCelsius(data.temperature),
-          darkMode ? 0.7 : 0.4
+          1
         )}
       >
         <CurrentMainContainer>
@@ -225,6 +233,7 @@ function MainPage() {
             />
             <CurrentCard data={data} darkMode={darkMode} isDay={day} />
           </FixedContainer>
+          <CurrentCardExpand darkMode={darkMode} data={data} />
           {/* <DailyCardContainer id="daily-contain">
             {data.daily.map((element, index) => (
               <DailyCard
@@ -255,7 +264,7 @@ function MainPage() {
             ))}
           </DailyCardContainer> */}
         </CurrentMainContainer>
-        <RateLimitContainer>
+        <RateLimitContainer darkMode={darkMode}>
           {rateLimit.remaining}/{rateLimit.limit}
           <span>REQUESTS LEFT</span>
         </RateLimitContainer>

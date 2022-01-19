@@ -89,7 +89,7 @@ interface Props {
 }
 const Recent = ({ darkMode, data }: Props) => {
   return (
-    <RecentContainer darkMode={darkMode} className="hide">
+    <RecentContainer darkMode={darkMode}>
       <LocationContainer>
         {data.city} {data.country}
         <LocationIcon id="location-icon" />

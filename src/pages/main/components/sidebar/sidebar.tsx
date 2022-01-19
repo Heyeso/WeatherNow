@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { COLORS, containerProps, RateLimit, SearchCardVM } from "../../../../utils/constants";
+import {
+  COLORS,
+  containerProps,
+  RateLimit,
+  SearchCardVM,
+} from "../../../../utils/constants";
 import { ReactComponent as MenuIcon } from "./../../../../assets/menu.icon.svg";
 import { ReactComponent as SearchIcon } from "./../../../../assets/search.icon.svg";
 import { ReactComponent as CityIcon } from "./../../../../assets/city.icon.svg";
@@ -9,7 +14,6 @@ import { ReactComponent as NightIcon } from "./../../../../assets/night.icon.svg
 import Recent from "./components/recent";
 import SearchResult from "./components/searchresult";
 import $ from "jquery";
-
 
 const SidebarContainer = styled.aside<containerProps>`
   width: 100%;
@@ -25,6 +29,9 @@ const SidebarContainer = styled.aside<containerProps>`
   background-color: ${(props) =>
     props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
   transition: max-height 0.5s ease-in;
+  h3 {
+    color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  }
   .hide {
     display: none;
   }
@@ -58,6 +65,9 @@ const SidebarContainer = styled.aside<containerProps>`
       background-color: ${(props) =>
         props.darkMode ? COLORS.HOVER_DARK : COLORS.HOVER};
     }
+  }
+  input {
+    color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
   #menu-icon {
     #menu-top,
@@ -115,7 +125,6 @@ const SearchBox = styled.div<containerProps>`
 const SearchInput = styled.input`
   font-family: "Montserrat medium";
   background-color: transparent;
-  color: #171717;
   font-size: 16px;
   height: 100%;
   width: 100%;
@@ -188,7 +197,7 @@ const Sidebar = ({ setRateLimit, darkMode, setDarkMode }: Props) => {
     await fetch(
       `${
         process.env.NODE_ENV !== "production"
-          ? "http://localhost:3000/search"
+          ? "http://localhost:3000/api/weather"
           : process.env.REACT_APP_API_URL
       }/?state=${city.replace(" ", "%20").toLowerCase()}`,
       {
@@ -233,36 +242,40 @@ const Sidebar = ({ setRateLimit, darkMode, setDarkMode }: Props) => {
           />
         )}
       </div>
-      <SearchBox darkMode={darkMode} className="hide">
-        <SearchInput
-          type="text"
-          placeholder="Enter a City..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => (e.key === "Enter" ? SearchForBook(search) : true)}
-        />
-        <SearchIcon id="search-icon" onClick={() => SearchForBook(search)} />
-      </SearchBox>
-      {loading ? (
-        <Loading />
-      ) : (
-        status !== 200 && (
-          <ServerError
-            message={status === 404 ? "City not found" : undefined}
+      <div className="hide">
+        <SearchBox darkMode={darkMode}>
+          <SearchInput
+            type="text"
+            placeholder="Enter a City..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) =>
+              e.key === "Enter" ? SearchForBook(search) : true
+            }
           />
-        )
-      )}
-      {!loading && data && (
-        <SearchResult darkMode={darkMode} data={data}></SearchResult>
-      )}
-      <h3 className="hide">Recent</h3>
-      {recentData &&
-        recentData.map(
-          (element, index) =>
-            JSON.stringify(element) !== JSON.stringify(data) && (
-              <Recent key={index} darkMode={darkMode} data={element} />
-            )
+          <SearchIcon id="search-icon" onClick={() => SearchForBook(search)} />
+        </SearchBox>
+        {loading ? (
+          <Loading />
+        ) : (
+          status !== 200 && (
+            <ServerError
+              message={status === 404 ? "City not found" : undefined}
+            />
+          )
         )}
+        {!loading && data && (
+          <SearchResult darkMode={darkMode} data={data}></SearchResult>
+        )}
+        <h3>Recent</h3>
+        {recentData &&
+          recentData.map(
+            (element, index) =>
+              JSON.stringify(element) !== JSON.stringify(data) && (
+                <Recent key={index} darkMode={darkMode} data={element} />
+              )
+          )}
+      </div>
     </SidebarContainer>
   );
 };
@@ -323,8 +336,8 @@ const LoadingContainer = styled.div`
   .lds-roller {
     display: inline-block;
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
   }
   .lds-roller div {
     animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;

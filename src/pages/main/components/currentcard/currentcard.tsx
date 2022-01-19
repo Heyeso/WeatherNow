@@ -6,6 +6,7 @@ import {
   containerProps,
   CurrentCardVM,
   DAY,
+  getHour,
   KelvinToCelsius,
 } from "../../../../utils/constants";
 import { getIcon } from "../../mainpage";
@@ -17,7 +18,6 @@ const CurrentCardContainer = styled.section<containerProps>`
   height: 100%;
   max-height: 500px;
   padding: 30px 15px;
-  color: ${COLORS.TEXT};
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -173,25 +173,12 @@ const CurrentDayTime = () => {
     return new Date();
   };
 
-  const getHour = () => {
-    if (time)
-      if (time.getHours() <= 12) {
-        if (time.getHours() < 10) return "0" + time.getHours();
-        else return time.getHours();
-      } else {
-        if (time.getHours() % 12 < 10) return "0" + (time.getHours() % 12);
-        else return time.getHours() % 12;
-      }
-
-    return "";
-  };
-
   return (
     <>
       <CurrentDayContainer>
         {time && `${DAY[time.getDay()].substring(0, 3)} ${time.getUTCDate()}, `}
         {time &&
-          `${getHour()}:${
+          `${getHour(time)}:${
             time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes()
           }`}
         {time && time.getHours() > 11 ? " PM" : " AM"}

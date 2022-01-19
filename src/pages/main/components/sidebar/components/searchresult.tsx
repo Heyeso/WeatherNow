@@ -12,6 +12,8 @@ interface containerProps {
   darkMode: boolean;
 }
 const SearchResultContainer = styled.section<containerProps>`
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: fit-content;
   margin: 10px 0;
@@ -21,6 +23,9 @@ const SearchResultContainer = styled.section<containerProps>`
     props.darkMode ? COLORS.CONTAINER_DARK : COLORS.CONTAINER};
   color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  h1 {
+    color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  }
   .contain {
     display: flex;
     align-items: center;
@@ -106,10 +111,10 @@ interface Props {
 }
 const SearchResult = ({ darkMode, data }: Props) => {
   return (
-    <SearchResultContainer darkMode={darkMode} className="hide">
+    <SearchResultContainer darkMode={darkMode}>
       <LocationContainer>
         {data.city} {data.country}
-        <LocationIcon id="location-icon-1"/>
+        <LocationIcon id="location-icon-1" />
       </LocationContainer>
       <div className="contain">
         <WeatherContain>

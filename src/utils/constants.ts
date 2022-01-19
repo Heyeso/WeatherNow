@@ -31,6 +31,8 @@ export interface CurrentCardVM {
   sunset: number;
   min: number;
   max: number;
+  uvi: number;
+  humidity: number;
   temperature: number;
   feels_like: number;
   wind_speed: number;
@@ -45,13 +47,10 @@ export interface CurrentCardVM {
 export interface SearchCardVM {
   city: string;
   country: string;
-  sunrise: number;
-  sunset: number;
   min: number;
   max: number;
   temperature: number;
   feels_like: number;
-  wind_speed: number;
   weather: {
     main: string;
     description: string;
@@ -84,3 +83,16 @@ export const DAY = [
 export interface containerProps {
   darkMode: boolean;
 }
+
+export const getHour = (time: Date) => {
+  if (time)
+    if (time.getHours() <= 12) {
+      if (time.getHours() < 10) return "0" + time.getHours();
+      else return time.getHours();
+    } else {
+      if (time.getHours() % 12 < 10) return "0" + (time.getHours() % 12);
+      else return time.getHours() % 12;
+    }
+
+  return "";
+};

@@ -214,11 +214,9 @@ const Sidebar = ({ setRateLimit, darkMode, setDarkMode }: Props) => {
   const SearchForBook = async (city: string) => {
     setLoading(true);
     await fetch(
-      `${
-        process.env.NODE_ENV !== "production"
-          ? "http://localhost:3000/search"
-          : process.env.REACT_APP_API_URL
-      }/?state=${city.replace(" ", "%20").toLowerCase()}`,
+      `${process.env.REACT_APP_API_URL}/?state=${city
+        .replace(" ", "%20")
+        .toLowerCase()}`,
       {
         method: `GET`,
       }

@@ -49,6 +49,21 @@ const Container = styled.div`
       font-size: 24px;
     }
   }
+  @media screen and (max-width: 769px) {
+    .message {
+      font-size: 72px;
+      font-family: "Montserrat regular";
+      svg {
+        margin: 0 15px;
+        width: 60px;
+        height: 60px;
+      }
+      p {
+        font-family: "Montserrat light";
+        font-size: 16px;
+      }
+    }
+  }
   .night {
     position: relative;
     width: 100%;
@@ -332,21 +347,28 @@ const HomeButton = styled.div`
   box-sizing: border-box;
   text-align: center;
   transition: all 0.2s;
-  font-size: 24px;
+  font-size: 18px;
   font-family: "Montserrat medium";
   a {
     color: ${COLORS.TEXT_DARK};
     text-decoration: none;
   }
-  :hover {
-    a {
-      color: #000000;
+  @media (hover: hover) {
+    :hover {
+      a {
+        color: #000000;
+      }
+      background-color: #ffffff;
     }
-    background-color: #ffffff;
   }
   @media all and (max-width: 30em) {
     display: block;
     margin: 0.4em auto;
+  }
+  @media screen and (max-width: 769px) {
+    font-size: 16px;
+    font-family: "Montserrat semi-bold";
+    border: 2px solid ${COLORS.TEXT_DARK};
   }
 `;
 

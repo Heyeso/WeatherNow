@@ -9,21 +9,21 @@ const PageNotFound = React.lazy(() => import("./pages/404page"));
 
 function App() {
   return (
-    <div className="App">
+    <>
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Suspense>
-    </div>
+    </>
   );
 }
 
 export default App;
 
 const LoadingContainer = styled.div`
-  background-color: ${COLORS.WHITE};
+  background-color: ${COLORS.TEXT_DARK};
   width: 100%;
   height: 100%;
   position: relative;
@@ -123,7 +123,7 @@ const LoadingContainer = styled.div`
 
 export function Loading() {
   return (
-    <LoadingContainer>
+    <LoadingContainer className="App">
       <div className="wrapper">
         <div className="circle" />
         <div className="circle" />

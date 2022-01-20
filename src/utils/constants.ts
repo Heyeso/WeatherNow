@@ -1,19 +1,17 @@
 export enum COLORS {
-  WHITE = "#FFFFFF",
-  BLACK = "#000000",
-  TEXT = "#2D3436",
-  TEXT2 = "#F2F2F2",
+  WHITE1 = "#EAEAEA",
+  CONTAINER = "#FCFCFC",
+  BACKGROUND = "#F2F2F2",
+  CONTAINER_DARK = "#171717",
+  BACKGROUND_DARK = "#010101",
+  TEXT = "#171717",
+  TEXT_DARK = "#FCFCFC",
+  HOVER = "#FCFCFC",
+  HOVER_DARK = "#232323",
+  ACTIVE = "#F2F2F2",
+  ACTIVE_DARK = "#202020",
 }
 
-export enum WEATHER {
-  SUNNY = "Clear",
-  CLOUDY = "Clouds",
-  RAIN = "Drizzle",
-  RAIN_SUNNY = "Rain",
-  SNOW = "Snow",
-  THUNDER = "Thunderstorm",
-  ATMOSPHERE = "Atmosphere",
-}
 export interface DailyCardVM {
   temperature: {
     max: number;
@@ -24,6 +22,7 @@ export interface DailyCardVM {
     description: string;
   };
   wind_speed: number;
+  humidity: number;
 }
 
 export interface CurrentCardVM {
@@ -31,6 +30,10 @@ export interface CurrentCardVM {
   country: string;
   sunrise: number;
   sunset: number;
+  min: number;
+  max: number;
+  uvi: number;
+  humidity: number;
   temperature: number;
   feels_like: number;
   wind_speed: number;
@@ -45,8 +48,8 @@ export interface CurrentCardVM {
 export interface SearchCardVM {
   city: string;
   country: string;
-  sunrise: number;
-  sunset: number;
+  min: number;
+  max: number;
   temperature: number;
   feels_like: number;
   weather: {
@@ -68,29 +71,33 @@ export const KelvinToFahrenheit = (value: number) => {
   return ((value - 273.15) * 9) / 5 + 32;
 };
 
-export const GetWEATHER = (weather: string) => {
-  if (weather === "Clear") return WEATHER.SUNNY;
-  if (weather === "Clouds") return WEATHER.CLOUDY;
-  if (weather === "Rain") return WEATHER.RAIN_SUNNY;
-  if (weather === "Drizzle") return WEATHER.RAIN;
-  if (weather === "Snow") return WEATHER.SNOW;
-  if (weather === "Thunderstorm") return WEATHER.THUNDER;
-
-  return WEATHER.ATMOSPHERE;
-};
-
-export const DAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-export const MONTH = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
+export const DAY = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ];
+
+export interface containerProps {
+  darkMode: boolean;
+}
+
+export interface tempProps {
+  temp: string;
+}
+
+export const getHour = (time: Date) => {
+  if (time)
+    if (time.getHours() <= 12) {
+      if (time.getHours() < 10) return "0" + time.getHours();
+      else return time.getHours();
+    } else {
+      if (time.getHours() % 12 < 10) return "0" + (time.getHours() % 12);
+      else return time.getHours() % 12;
+    }
+
+  return "";
+};

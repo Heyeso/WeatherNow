@@ -34,10 +34,10 @@ const colorMixer = (
   var r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
   var g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
   var b = colorChannelMixer(rgbA[2], rgbB[2], amountToMix);
-  return "rgba(" + r + "," + g + "," + b + "," + opacity + ")";
+  return "rgba(" + r.toFixed(0) + "," + g.toFixed(0) + "," + b.toFixed(0) + "," + opacity + ")";
 };
 
-export const TemperatureColorGenerator = (temp: number, opacity: number) => {
+export const TemperatureColorGenerator = (temp: number, opacity: number = 0.5) => {
   if (temp >= TEMP[0]) return `rgb(${TEMP_COLORS[0]}, ${opacity})`;
   if (temp <= TEMP[TEMP.length - 1])
     return `rgba(${TEMP_COLORS[TEMP.length - 1]}, ${opacity})`;

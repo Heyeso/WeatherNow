@@ -2,45 +2,39 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import {
   COLORS,
+  containerProps,
   CurrentCardVM,
   DAY,
   KelvinToCelsius,
-  KelvinToFahrenheit,
   RateLimit,
-  WEATHER,
 } from "../../utils/constants";
 import { TemperatureColorGenerator } from "../../utils/temperaturecolorgen";
-import {
-  AtmosphereIcon,
-  AtmosphereNightIcon,
-  CloudyIcon,
-  CloudyNightIcon,
-  NightIcon,
-  RainIcon,
-  RainNightIcon,
-  RainSunnyIcon,
-  SnowIcon,
-  SnowNightIcon,
-  SunnyIcon,
-  ThunderIcon,
-  ThunderNightIcon,
-} from "../../assets/weather.icon";
+import { ReactComponent as SunnyIcon } from "../../assets/sunny.icon.svg";
+import { ReactComponent as NightIcon } from "../../assets/moon.icon.svg";
+import { ReactComponent as RainIcon } from "../../assets/rain.icon.svg";
+import { ReactComponent as RainSunnyIcon } from "../../assets/rain.sunny.icon.svg";
+import { ReactComponent as RainNightIcon } from "../../assets/rain.moon.icon.svg";
+import { ReactComponent as CloudyIcon } from "../../assets/cloudy.icon.svg";
+import { ReactComponent as CloudySunnyIcon } from "../../assets/cloudy.sunny.icon.svg";
+import { ReactComponent as CloudyNightIcon } from "../../assets/cloudy.moon.icon.svg";
+import { ReactComponent as AtmosphereIcon } from "../../assets/atmosphere.icon.svg";
+import { ReactComponent as SnowIcon } from "../../assets/snow.icon.svg";
+import { ReactComponent as ThunderIcon } from "../../assets/thunder.icon.svg";
 import DailyCard from "./components/dailycard";
-import CurrentCard from "./components/currentcard";
-import BGImageDay from "./../../assets/day.png";
-import BGImageNight from "./../../assets/night.png";
+import CurrentCard from "./components/currentcard/currentcard";
 import { Loading } from "../../App";
+import Sidebar from "./components/sidebar/sidebar";
+import CurrentCardExpand from "./components/currentcard/currentcardexpand";
 
-const Search = React.lazy(() => import("./components/searchpopup"));
-
-const RateLimitContainer = styled.div`
-  opacity: 0.8;
+const RateLimitContainer = styled.div<containerProps>`
+  opacity: 0.5;
   display: flex;
+  pointer-events: none;
   flex-direction: column;
   position: fixed;
   font-size: 24px;
   font-family: "Montserrat medium";
-  color: ${COLORS.TEXT};
+  color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   top: 10px;
   left: 10px;
   width: fit-content;
@@ -58,84 +52,86 @@ const RateLimitContainer = styled.div`
   }
 `;
 
-const MainPageContainer = styled.section<BGProps>`
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  position: relative;
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-image: url(${(props) => props.isDay ? BGImageDay : BGImageNight});
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
-`;
-
-const BGcolorContainer = styled.div<BGProps>`
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  position: relative;
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: ${(props) => props.backGroundColor || "white"};
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  @media screen and (max-width: 769px) {
-    padding: 20px 10px 0;
-  }
-`;
-
-const DailyCardContainer = styled.section`
-  display: flex;
-  width: 100%;
-  box-sizing: border-box;
-  max-width: fit-content;
-  margin: 20px 0 0;
-  padding: 30px 20px 40px;
-  overflow-x: auto;
-  flex-wrap: nowrap;
-  @media screen and (max-width: 769px) {
-    flex-direction: column;
-    max-width: none;
-    padding: 20px 5px;
-  }
-  /* ===== Scrollbar CSS ===== */
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: #353535 #ffffff;
-
-  /* Chrome, Edge, and Safari */
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color: #3d3d3d;
-    border-radius: 500px;
-    border: 3px none #ffffff;
-  }
-`;
-
-interface BGProps {
+interface BGProps extends containerProps {
   backGroundColor?: string;
   isDay?: boolean;
 }
 
+const MainPageContainer = styled.main<BGProps>`
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  @media (hover: hover) {
+    /* ===== Scrollbar CSS ===== */
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: ${(props) =>
+        props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND}
+      #ffffff;
+
+    /* Chrome, Edge, and Safari */
+    ::-webkit-scrollbar {
+      width: 5px;
+      padding: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: ${(props) =>
+        props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
+      border-radius: 500px;
+      border: 3px none #ffffff;
+    }
+  }
+  ${(props) =>
+    !props.darkMode
+      ? "  background-color: #0093e9; background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%); .white{fill: #56ccf2; }"
+      : "background-color: #007ec3;background-image: linear-gradient(160deg, #007ec3 0%, #007b6a 100%);"};
+`;
+
+const FixedContainer = styled.section``;
+
+const CurrentMainContainer = styled.div`
+  width: 100%;
+  height: fit-content;
+  max-width: 600px;
+  padding: 20px 5px;
+  box-sizing: border-box;
+  display: block;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  @media screen and (max-width: 450px) {
+    padding: 5px 5px 20px;
+  }
+`;
+
+const DailyCardContainer = styled.section<containerProps>`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  height: fit-content;
+  margin: 10px 0 0;
+  border-radius: 20px;
+  color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  background-color: ${(props) =>
+    props.darkMode ? COLORS.CONTAINER_DARK : COLORS.CONTAINER};
+  padding: 30px 15px;
+`;
+
 function MainPage() {
   const [data, setData] = useState<CurrentCardVM | null>(null);
-  const [toCelsius, setToCelsius] = useState<boolean>(true);
-  const [isDay, setIsDay] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [day, setDay] = useState<boolean>(true);
   const [rateLimit, setRateLimit] = useState<RateLimit>({
     limit: "0",
     remaining: "0",
@@ -173,16 +169,17 @@ function MainPage() {
             })
             .then((weatherData) => {
               setData(weatherData);
-              setIsDay(
+              const IS_DAY =
                 new Date().getHours() <
                   new Date(
                     (weatherData ? weatherData.sunset : 0) * 1000
                   ).getHours() &&
-                  new Date().getHours() >
-                    new Date(
-                      (weatherData ? weatherData.sunrise : 0) * 1000
-                    ).getHours()
-              );
+                new Date().getHours() >
+                  new Date(
+                    (weatherData ? weatherData.sunrise : 0) * 1000
+                  ).getHours();
+              setDarkMode(!IS_DAY);
+              setDay(IS_DAY);
             })
             .catch((err) => console.log(err));
           setLoading(false);
@@ -216,58 +213,36 @@ function MainPage() {
 
   return (
     data && (
-      <MainPageContainer isDay={isDay}>
-        <BGcolorContainer
-          backGroundColor={TemperatureColorGenerator(
-            KelvinToCelsius(data.temperature),
-            0.7
-          )}
-        >
-          <CurrentCard
-            isDay={isDay}
-            toCelsius={toCelsius}
-            setToCelsius={setToCelsius}
-            Temperature={data.temperature}
-            FeelsLike={data.feels_like}
-            WindSpeed={data.wind_speed}
-            Description={data.weather.description}
-            Location={{
-              City: data.city,
-              Country: data.country,
-            }}
-            Weather={data.weather.main}
-          />
-          <DailyCardContainer id="daily-contain">
+      <MainPageContainer
+        darkMode={darkMode}
+        className="App"
+        backGroundColor={TemperatureColorGenerator(
+          KelvinToCelsius(data.temperature),
+          1
+        )}
+      >
+        <CurrentMainContainer>
+          <FixedContainer>
+            <Sidebar
+              setRateLimit={setRateLimit}
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+            />
+            <CurrentCard data={data} darkMode={darkMode} isDay={day} />
+          </FixedContainer>
+          <DailyCardContainer id="daily-contain" darkMode={darkMode}>
             {data.daily.map((element, index) => (
               <DailyCard
                 key={index}
+                darkMode={darkMode}
                 DailyDate={{ day: dailySeq[index], date: index }}
-                WindSpeed={element.wind_speed}
-                Temperature={
-                  toCelsius
-                    ? {
-                        max: parseInt(
-                          KelvinToCelsius(element.temperature.max).toFixed(0)
-                        ),
-                        min: parseInt(
-                          KelvinToCelsius(element.temperature.min).toFixed(0)
-                        ),
-                      }
-                    : {
-                        max: parseInt(
-                          KelvinToFahrenheit(element.temperature.max).toFixed(0)
-                        ),
-                        min: parseInt(
-                          KelvinToFahrenheit(element.temperature.min).toFixed(0)
-                        ),
-                      }
-                }
-                Weather={element.weather}
+                data={element}
               />
             ))}
           </DailyCardContainer>
-        </BGcolorContainer>
-        <RateLimitContainer>
+          <CurrentCardExpand darkMode={darkMode} data={data} />
+        </CurrentMainContainer>
+        <RateLimitContainer darkMode={darkMode}>
           {rateLimit.remaining}/{rateLimit.limit}
           <span>REQUESTS LEFT</span>
         </RateLimitContainer>
@@ -277,34 +252,6 @@ function MainPage() {
 }
 export default MainPage;
 
-export const getIcon = (weather_condition: WEATHER, isDay_bool: boolean) => {
-  switch (weather_condition) {
-    case WEATHER.SUNNY:
-      if (isDay_bool) return <SunnyIcon />;
-      else return <NightIcon />;
-    case WEATHER.CLOUDY:
-      if (isDay_bool) return <CloudyIcon />;
-      else return <CloudyNightIcon />;
-    case WEATHER.RAIN:
-      if (isDay_bool) return <RainIcon />;
-      else return <RainNightIcon />;
-    case WEATHER.RAIN_SUNNY:
-      if (isDay_bool) return <RainSunnyIcon />;
-      else return <RainNightIcon />;
-    case WEATHER.SNOW:
-      if (isDay_bool) return <SnowIcon />;
-      else return <SnowNightIcon />;
-    case WEATHER.THUNDER:
-      if (isDay_bool) return <ThunderIcon />;
-      else return <ThunderNightIcon />;
-    case WEATHER.ATMOSPHERE:
-      if (isDay_bool) return <AtmosphereIcon />;
-      else return <AtmosphereNightIcon />;
-    default:
-      return <SunnyIcon />;
-  }
-};
-
 const ServerErrorContainer = styled.div`
   div {
     align-items: center;
@@ -312,7 +259,7 @@ const ServerErrorContainer = styled.div`
     top: 50%;
     left: 50%;
     font-size: 18px;
-    color: ${COLORS.BLACK};
+    color: ${COLORS.TEXT};
     font-family: "Montserrat light";
     text-align: center;
     transform: translate(-50%, -50%);
@@ -340,7 +287,7 @@ const GeolocationErrorContainer = styled.div`
     top: 50%;
     left: 50%;
     font-size: 18px;
-    color: ${COLORS.BLACK};
+    color: ${COLORS.TEXT};
     font-family: "Montserrat light";
     text-align: center;
     transform: translate(-50%, -50%);
@@ -366,4 +313,34 @@ const GeolocationError = () => {
       </div>
     </GeolocationErrorContainer>
   );
+};
+
+export const getIcon = (
+  condition: string,
+  isDay: boolean = true,
+  description: string = ""
+) => {
+  switch (condition) {
+    case "Clear":
+      if (isDay) return <SunnyIcon />;
+      else return <NightIcon />;
+    case "Clouds":
+      if (description === "few clouds") {
+        if (isDay) return <CloudySunnyIcon />;
+        else return <CloudyNightIcon />;
+      }
+      return <CloudyIcon />;
+    case "Drizzle":
+      return <RainNightIcon />;
+    case "Rain":
+      if (description === "shower rain") return <RainIcon />;
+      if (isDay) return <RainSunnyIcon />;
+      else return <RainNightIcon />;
+    case "Snow":
+      return <SnowIcon />;
+    case "Thunderstorm":
+      return <ThunderIcon />;
+    default:
+      return <AtmosphereIcon />;
+  }
 };

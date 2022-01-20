@@ -48,6 +48,9 @@ const SidebarContainer = styled.aside<containerProps>`
     #menu-bottom {
       transform: translateY(-6px);
     }
+    @media screen and (max-width: 450px) {
+      max-height: 500px;
+    }
   }
   #menu-icon,
   #search-icon {

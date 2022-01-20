@@ -16,7 +16,7 @@ interface containerProps {
 const RecentContainer = styled.section<containerProps>`
   width: 100%;
   height: fit-content;
-  margin: 2.5px 0;
+  margin: 10px 0;
   padding: 15px;
   border-radius: 10px;
   background-color: ${(props) =>
@@ -30,6 +30,7 @@ const RecentContainer = styled.section<containerProps>`
     fill: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
   @media screen and (max-width: 450px) {
+    margin: 5px 0;
     padding: 15px 10px;
   }
 `;

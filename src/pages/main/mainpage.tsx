@@ -153,13 +153,7 @@ function MainPage() {
       navigator.geolocation.getCurrentPosition(
         async (location) => {
           await fetch(
-            `${
-              process.env.NODE_ENV !== "production"
-                ? "http://localhost:3000"
-                : process.env.REACT_APP_API_URL
-            }/?lon=${location.coords.longitude}&lat=${
-              location.coords.latitude
-            }`,
+            `${process.env.REACT_APP_API_URL}/?lon=${location.coords.longitude}&lat=${location.coords.latitude}`,
             {
               method: `GET`,
             }

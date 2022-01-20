@@ -34,6 +34,12 @@ const CurrentCardExpandContainer = styled.section<containerProps>`
     border-top: 2px solid
       ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
+  @media screen and (max-width: 450px) {
+    padding: 15px 10px;
+    .hr {
+      display: none;
+    }
+  }
 `;
 const Content = styled.p`
   width: 100%;
@@ -57,6 +63,20 @@ const Content = styled.p`
     font-family: "Montserrat medium";
     font-size: 16px;
     margin-left: auto;
+  }
+
+  @media screen and (max-width: 450px) {
+    padding: 10px 5px;
+    font-size: 12px;
+    letter-spacing: -0.5px;
+    svg {
+      width: 25px;
+      height: 25px;
+      margin-right: 7px;
+    }
+    .content-value {
+      font-size: 14px;
+    }
   }
 `;
 interface Props {

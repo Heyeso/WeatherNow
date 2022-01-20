@@ -19,16 +19,15 @@ const SidebarContainer = styled.aside<containerProps>`
   width: 100%;
   height: 650px;
   max-height: 55px;
-  margin: 10px 0 7px;
+  margin: 0 0 7px;
   padding: 10px;
   display: flex;
   overflow: hidden;
   flex-direction: column;
   border-radius: 20px;
   color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
-  background-color: ${(props) =>
-    props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
-  transition: max-height 0.5s ease-in;
+  background-color: transparent;
+  transition: max-height 0.5s ease-in, background-color 0.2s ease-in;
   h3 {
     color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
@@ -39,7 +38,7 @@ const SidebarContainer = styled.aside<containerProps>`
     max-height: 650px;
     background-color: ${(props) =>
       props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
-    transition: max-height 0.4s ease-out;
+    transition: max-height 0.4s ease-out, background-color 0.2s ease-in;
     #menu-top,
     #menu-bottom {
       opacity: 0;
@@ -58,12 +57,16 @@ const SidebarContainer = styled.aside<containerProps>`
     height: 35px;
     width: 35px;
     margin-right: auto;
+    transition: background-color 0.2s ease-in;
     * {
       stroke: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
     }
-    :hover {
-      background-color: ${(props) =>
-        props.darkMode ? COLORS.HOVER_DARK : COLORS.HOVER};
+    @media (hover: hover) {
+      :hover {
+        background-color: ${(props) =>
+          props.darkMode ? COLORS.HOVER_DARK : COLORS.HOVER};
+        transition: background-color 0.2s;
+      }
     }
   }
   input {
@@ -116,9 +119,20 @@ const SearchBox = styled.div<containerProps>`
     height: 50px;
     width: 56px;
     border-radius: 500px;
-    :hover {
-      background-color: ${(props) =>
-        props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
+    @media (hover: hover) {
+      :hover {
+        background-color: ${(props) =>
+          props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
+      }
+    }
+  }
+  @media screen and (max-width: 450px) {
+    height: 35px;
+    margin: 10px auto;
+    #search-icon {
+      margin: 0 0 0 3px;
+      height: 35px;
+      width: 41px;
     }
   }
 `;
@@ -134,6 +148,11 @@ const SearchInput = styled.input`
   :focus {
     outline: none;
     background-color: transparent;
+  }
+  @media screen and (max-width: 450px) {
+    font-size: 14px;
+    padding: 0 10px;
+    letter-spacing: -0.3px;
   }
 `;
 interface Props {
@@ -197,7 +216,7 @@ const Sidebar = ({ setRateLimit, darkMode, setDarkMode }: Props) => {
     await fetch(
       `${
         process.env.NODE_ENV !== "production"
-          ? "http://localhost:3000/api/weather"
+          ? "http://localhost:3000/search"
           : process.env.REACT_APP_API_URL
       }/?state=${city.replace(" ", "%20").toLowerCase()}`,
       {
@@ -264,14 +283,22 @@ const Sidebar = ({ setRateLimit, darkMode, setDarkMode }: Props) => {
             />
           )
         )}
-        {!loading && data && (
-          <SearchResult darkMode={darkMode} data={data}></SearchResult>
-        )}
+        {!loading &&
+          (data ? (
+            <SearchResult darkMode={darkMode} data={data}></SearchResult>
+          ) : (
+            recentData && (
+              <SearchResult
+                darkMode={darkMode}
+                data={recentData[0]}
+              ></SearchResult>
+            )
+          ))}
         <h3>Recent</h3>
         {recentData &&
           recentData.map(
             (element, index) =>
-              JSON.stringify(element) !== JSON.stringify(data) && (
+              index !== 0 && (
                 <Recent key={index} darkMode={darkMode} data={element} />
               )
           )}

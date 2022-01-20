@@ -22,6 +22,7 @@ export interface DailyCardVM {
     description: string;
   };
   wind_speed: number;
+  humidity: number;
 }
 
 export interface CurrentCardVM {
@@ -82,6 +83,10 @@ export const DAY = [
 
 export interface containerProps {
   darkMode: boolean;
+}
+
+export interface tempProps {
+  temp: string;
 }
 
 export const getHour = (time: Date) => {

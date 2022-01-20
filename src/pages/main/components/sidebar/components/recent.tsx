@@ -4,7 +4,9 @@ import {
   COLORS,
   KelvinToCelsius,
   SearchCardVM,
+  tempProps,
 } from "../../../../../utils/constants";
+import { TemperatureColorGenerator } from "../../../../../utils/temperaturecolorgen";
 import { getIcon } from "../../../mainpage";
 import { ReactComponent as LocationIcon } from "./../../../../../assets/location.icon.svg";
 
@@ -20,9 +22,6 @@ const RecentContainer = styled.section<containerProps>`
   background-color: ${(props) =>
     props.darkMode ? COLORS.CONTAINER_DARK : COLORS.CONTAINER};
   color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
-  h1 {
-    color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
-  }
   .contain {
     display: flex;
     align-items: center;
@@ -30,9 +29,12 @@ const RecentContainer = styled.section<containerProps>`
   #location-icon * {
     fill: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
+  @media screen and (max-width: 450px) {
+    padding: 15px 10px;
+  }
 `;
 
-const TemperatureContainer = styled.h1`
+const TemperatureContainer = styled.h1<tempProps>`
   width: 100px;
   height: fit-content;
   margin: 0 30px 0 0;
@@ -42,9 +44,19 @@ const TemperatureContainer = styled.h1`
   letter-spacing: -6px;
   display: flex;
   align-items: flex-start;
+  color: ${(props) => props.temp};
   span {
     font-size: 36px;
     font-family: "Montserrat medium";
+  }
+  @media screen and (max-width: 450px) {
+    font-size: 36px;
+    letter-spacing: -2px;
+    margin: 0 10px 0 0;
+    width: 60px;
+    span {
+      font-size: 24px;
+    }
   }
 `;
 
@@ -56,6 +68,13 @@ const TempMinMaxContainer = styled.div`
   opacity: 0.8;
   span {
     margin: 0 3px;
+  }
+  @media screen and (max-width: 450px) {
+    span {
+      font-family: "Montserrat semi-bold";
+      font-size: 12px;
+      margin: 0;
+    }
   }
 `;
 const LocationContainer = styled.p`
@@ -72,6 +91,16 @@ const LocationContainer = styled.p`
     height: 15px;
     margin-left: 7px;
   }
+  @media screen and (max-width: 450px) {
+    font-size: 14px;
+    margin: 0;
+    font-family: "Montserrat semi-bold";
+    svg {
+      margin-left: 5px;
+      width: 12px;
+      height: 12px;
+    }
+  }
 `;
 
 const WeatherContain = styled.p`
@@ -80,6 +109,12 @@ const WeatherContain = styled.p`
   svg {
     width: 65px;
     height: 65px;
+  }
+  @media screen and (max-width: 450px) {
+    svg {
+      width: 40px;
+      height: 40px;
+    }
   }
 `;
 
@@ -95,7 +130,12 @@ const Recent = ({ darkMode, data }: Props) => {
         <LocationIcon id="location-icon" />
       </LocationContainer>
       <div className="contain">
-        <TemperatureContainer>
+        <TemperatureContainer
+          temp={TemperatureColorGenerator(
+            KelvinToCelsius(data.temperature),
+            0.8
+          )}
+        >
           {KelvinToCelsius(data.temperature).toFixed(0)}
           <span>°</span>
         </TemperatureContainer>

@@ -4,7 +4,9 @@ import {
   COLORS,
   KelvinToCelsius,
   SearchCardVM,
+  tempProps,
 } from "../../../../../utils/constants";
+import { TemperatureColorGenerator } from "../../../../../utils/temperaturecolorgen";
 import { getIcon } from "../../../mainpage";
 import { ReactComponent as LocationIcon } from "./../../../../../assets/location.icon.svg";
 
@@ -23,9 +25,6 @@ const SearchResultContainer = styled.section<containerProps>`
     props.darkMode ? COLORS.CONTAINER_DARK : COLORS.CONTAINER};
   color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  h1 {
-    color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
-  }
   .contain {
     display: flex;
     align-items: center;
@@ -33,13 +32,13 @@ const SearchResultContainer = styled.section<containerProps>`
   #location-icon-1 * {
     fill: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
-  .max {
-    border-right: 1.5px solid
-      ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  @media screen and (max-width: 450px) {
+    padding: 15px 10px;
+    margin: 7px 0;
   }
 `;
 
-const TemperatureContainer = styled.h1`
+const TemperatureContainer = styled.h1<tempProps>`
   width: fit-content;
   height: fit-content;
   margin: 0 30px 0 0;
@@ -49,10 +48,20 @@ const TemperatureContainer = styled.h1`
   letter-spacing: -6px;
   display: flex;
   align-items: flex-start;
+  color: ${(props) => props.temp};
   span {
     margin-left: 5px;
     font-size: 36px;
     font-family: "Montserrat medium";
+  }
+  @media screen and (max-width: 450px) {
+    font-size: 36px;
+    letter-spacing: -4px;
+    margin: 0 10px 0 0;
+    span {
+      font-family: "Montserrat medium";
+      font-size: 24px;
+    }
   }
 `;
 
@@ -72,10 +81,26 @@ const DescriptionContainer = styled.div`
     }
     margin: 5px 0;
     &.max {
-      padding-right: 7px;
+      padding-right: 5px;
     }
     &.min {
-      padding-left: 7px;
+      padding-left: 5px;
+    }
+  }
+  @media screen and (max-width: 450px) {
+    span {
+      font-size: 12px;
+      &.desc {
+        font-size: 14px;
+        text-transform: capitalize;
+      }
+      margin: 3px 0;
+      &.max {
+        padding-right: 3px;
+      }
+      &.min {
+        padding-left: 3px;
+      }
     }
   }
 `;
@@ -94,6 +119,16 @@ const LocationContainer = styled.p`
     height: 15px;
     margin-left: 7px;
   }
+  @media screen and (max-width: 450px) {
+    font-size: 14px;
+    margin: 0 0 5px;
+    font-family: "Montserrat semi-bold";
+    svg {
+      margin-left: 5px;
+      width: 12px;
+      height: 12px;
+    }
+  }
 `;
 
 const WeatherContain = styled.p`
@@ -102,6 +137,13 @@ const WeatherContain = styled.p`
   svg {
     width: 65px;
     height: 65px;
+  }
+  @media screen and (max-width: 450px) {
+    margin-right: 7px;
+    svg {
+      width: 35px;
+      height: 35px;
+    }
   }
 `;
 
@@ -120,7 +162,9 @@ const SearchResult = ({ darkMode, data }: Props) => {
         <WeatherContain>
           {getIcon(data.weather.main, true, data.weather.description)}
         </WeatherContain>
-        <TemperatureContainer>
+        <TemperatureContainer
+          temp={TemperatureColorGenerator(KelvinToCelsius(data.temperature), 1)}
+        >
           {KelvinToCelsius(data.temperature).toFixed(0)}
           <span>°</span>
         </TemperatureContainer>
@@ -128,6 +172,7 @@ const SearchResult = ({ darkMode, data }: Props) => {
           <span className="desc">{data.weather.description}</span>
           <div>
             <span className="max">{KelvinToCelsius(data.max).toFixed(0)}°</span>
+            /
             <span className="min">{KelvinToCelsius(data.min).toFixed(0)}°</span>
           </div>
           <span className="feels-like">

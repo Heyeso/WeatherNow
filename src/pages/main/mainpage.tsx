@@ -70,7 +70,9 @@ const MainPageContainer = styled.main<BGProps>`
     /* ===== Scrollbar CSS ===== */
     /* Firefox */
     scrollbar-width: thin;
-    scrollbar-color: ${(props) => (props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND)} #ffffff;
+    scrollbar-color: ${(props) =>
+        props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND}
+      #ffffff;
 
     /* Chrome, Edge, and Safari */
     ::-webkit-scrollbar {
@@ -83,12 +85,12 @@ const MainPageContainer = styled.main<BGProps>`
     }
 
     ::-webkit-scrollbar-thumb {
-      background-color: ${(props) => (props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND)};
+      background-color: ${(props) =>
+        props.darkMode ? COLORS.BACKGROUND_DARK : COLORS.BACKGROUND};
       border-radius: 500px;
       border: 3px none #ffffff;
     }
   }
-
   ${(props) =>
     !props.darkMode
       ? "  background-color: #0093e9; background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%); .white{fill: #56ccf2; }"
@@ -107,22 +109,23 @@ const CurrentMainContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin: auto;
+  @media screen and (max-width: 450px) {
+    padding: 5px 5px 20px;
+  }
 `;
 
-const DailyCardContainer = styled.section`
+const DailyCardContainer = styled.section<containerProps>`
   display: flex;
+  flex-direction: column;
   width: 100%;
   box-sizing: border-box;
-  max-width: fit-content;
-  margin: 20px 0 0;
-  padding: 30px 20px 40px;
-  overflow-x: auto;
-  flex-wrap: nowrap;
-  @media screen and (max-width: 769px) {
-    flex-direction: column;
-    max-width: none;
-    padding: 20px 5px;
-  }
+  height: fit-content;
+  margin: 10px 0 0;
+  border-radius: 20px;
+  color: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
+  background-color: ${(props) =>
+    props.darkMode ? COLORS.CONTAINER_DARK : COLORS.CONTAINER};
+  padding: 30px 15px;
 `;
 
 function MainPage() {
@@ -233,36 +236,17 @@ function MainPage() {
             />
             <CurrentCard data={data} darkMode={darkMode} isDay={day} />
           </FixedContainer>
-          <CurrentCardExpand darkMode={darkMode} data={data} />
-          {/* <DailyCardContainer id="daily-contain">
+          <DailyCardContainer id="daily-contain" darkMode={darkMode}>
             {data.daily.map((element, index) => (
               <DailyCard
                 key={index}
+                darkMode={darkMode}
                 DailyDate={{ day: dailySeq[index], date: index }}
-                WindSpeed={element.wind_speed}
-                Temperature={
-                  toCelsius
-                    ? {
-                        max: parseInt(
-                          KelvinToCelsius(element.temperature.max).toFixed(0)
-                        ),
-                        min: parseInt(
-                          KelvinToCelsius(element.temperature.min).toFixed(0)
-                        ),
-                      }
-                    : {
-                        max: parseInt(
-                          KelvinToFahrenheit(element.temperature.max).toFixed(0)
-                        ),
-                        min: parseInt(
-                          KelvinToFahrenheit(element.temperature.min).toFixed(0)
-                        ),
-                      }
-                }
-                Weather={element.weather}
+                data={element}
               />
             ))}
-          </DailyCardContainer> */}
+          </DailyCardContainer>
+          <CurrentCardExpand darkMode={darkMode} data={data} />
         </CurrentMainContainer>
         <RateLimitContainer darkMode={darkMode}>
           {rateLimit.remaining}/{rateLimit.limit}

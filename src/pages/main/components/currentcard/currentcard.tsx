@@ -8,7 +8,9 @@ import {
   DAY,
   getHour,
   KelvinToCelsius,
+  tempProps,
 } from "../../../../utils/constants";
+import { TemperatureColorGenerator } from "../../../../utils/temperaturecolorgen";
 import { getIcon } from "../../mainpage";
 
 const CurrentCardContainer = styled.section<containerProps>`
@@ -38,8 +40,15 @@ const CurrentCardContainer = styled.section<containerProps>`
   #location-icon-2 * {
     fill: ${(props) => (props.darkMode ? COLORS.TEXT_DARK : COLORS.TEXT)};
   }
+
+  @media screen and (max-width: 450px) {
+    padding: 15px 10px;
+    .inner-contain {
+      flex-direction: column;
+    }
+  }
 `;
-const TemperatureContain = styled.div`
+const TemperatureContain = styled.div<tempProps>`
   max-width: 150px;
   height: fit-content;
   margin: 0 30px 0 0;
@@ -49,20 +58,37 @@ const TemperatureContain = styled.div`
   letter-spacing: -14px;
   display: flex;
   align-items: flex-start;
+  color: ${(props) => props.temp};
   span {
     margin-left: 5px;
     font-size: 36px;
     letter-spacing: normal;
     font-family: "Montserrat regular";
   }
+  @media screen and (max-width: 450px) {
+    font-size: 48px;
+    letter-spacing: -7px;
+    margin: 0 auto 0 0;
+    span {
+      font-family: "Montserrat medium";
+      font-size: 18px;
+    }
+  }
 `;
 const WeatherContain = styled.p`
   margin: 0;
   margin-left: auto;
-  margin-right: 15px;
   svg {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
+  }
+  @media screen and (max-width: 450px) {
+    margin-bottom: auto;
+    margin-right: 7px;
+    svg {
+      width: 80px;
+      height: 80px;
+    }
   }
 `;
 const LocationContain = styled.p`
@@ -78,6 +104,16 @@ const LocationContain = styled.p`
     margin-left: 7px;
     width: 15px;
     height: 15px;
+  }
+  @media screen and (max-width: 450px) {
+    font-size: 14px;
+    margin: 7px auto 5px 0;
+    font-family: "Montserrat semi-bold";
+    #location-icon-2 {
+      margin-left: 5px;
+      width: 12px;
+      height: 12px;
+    }
   }
 `;
 const DescriptionContain = styled.div`
@@ -105,6 +141,26 @@ const DescriptionContain = styled.div`
       padding-left: 5px;
     }
   }
+  @media screen and (max-width: 450px) {
+    font-size: 12px;
+    line-height: normal;
+    .desc {
+      margin: 0;
+      font-size: 14px;
+    }
+    .feels-like {
+      margin: 0;
+    }
+    .min-max {
+      margin: 0;
+      .max {
+        padding-right: 3px;
+      }
+      .min {
+        padding-left: 3px;
+      }
+    }
+  }
 `;
 interface CurrentCardProps {
   data: CurrentCardVM;
@@ -116,7 +172,12 @@ const CurrentCard = ({ data, darkMode, isDay }: CurrentCardProps) => {
     <CurrentCardContainer darkMode={darkMode}>
       <section className="contain">
         <div className="inner-contain">
-          <TemperatureContain>
+          <TemperatureContain
+            temp={TemperatureColorGenerator(
+              KelvinToCelsius(data.temperature),
+              1
+            )}
+          >
             {KelvinToCelsius(data.temperature).toFixed(0)}
             <span>°c</span>
           </TemperatureContain>
